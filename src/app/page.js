@@ -5,47 +5,6 @@ import { tests, getTestsBySubject } from '../data/questions';
 // ── Palette state constants ───────────────────────────────────
 const S = { NOT_VISITED: 0, NOT_ANSWERED: 1, ANSWERED: 2, MARKED: 3, MARKED_ANSWERED: 4 };
 
-// ── Image question/solution renderer ──────────────────────────
-function QImage({ src, alt, style }) {
-  const [zoomed, setZoomed] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
-  if (!src) return null;
-  return (
-    <>
-      <div style={{
-        background: 'var(--bg2)', border: '1px solid var(--border)',
-        borderRadius: 12, overflow: 'hidden', cursor: 'zoom-in',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        ...style
-      }} onClick={() => setZoomed(true)}>
-        {!error ? (
-          <img src={src} alt={alt} style={{
-            maxWidth: '100%', maxHeight: 500, display: 'block',
-            opacity: loaded ? 1 : 0, transition: 'opacity 0.3s'
-          }} onLoad={() => setLoaded(true)} onError={() => setError(true)} />
-        ) : (
-          <div style={{ padding: 24, color: 'var(--text3)', textAlign: 'center', fontSize: '0.85rem' }}>
-            Image not found: {src}
-          </div>
-        )}
-      </div>
-      {zoomed && !error && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 2000, cursor: 'zoom-out'
-        }} onClick={() => setZoomed(false)}>
-          <img src={src} alt={alt} style={{
-            maxWidth: '95vw', maxHeight: '95vh', objectFit: 'contain',
-            borderRadius: 8, boxShadow: '0 0 40px rgba(0,0,0,0.5)'
-          }} />
-        </div>
-      )}
-    </>
-  );
-}
-
 // ── Storage helpers ───────────────────────────────────────────
 function saveResult(testId, result) {
   try { localStorage.setItem(`jee_result_${testId}`, JSON.stringify(result)); } catch {}
@@ -88,6 +47,14 @@ const globalCSS = `
   @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
   .slide-up { animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1); }
   @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  .q-image { max-width: 100%; height: auto; border-radius: 8px; display: block; }
+  .q-image-zoom { cursor: zoom-in; }
+  .zoom-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2000; cursor: zoom-out; padding: 24px;
+  }
+  .zoom-overlay img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 8px; }
 `;
 
 // ── Palette bubble colors ─────────────────────────────────────
@@ -99,11 +66,11 @@ function bubbleStyle(state, selected) {
   };
   if (selected) base.outline = '3px solid var(--accent2)';
   switch (state) {
-    case S.NOT_VISITED: return { ...base, background: 'var(--grey)', color: '#fff' };
-    case S.NOT_ANSWERED: return { ...base, background: 'var(--red)', color: '#fff' };
-    case S.ANSWERED: return { ...base, background: 'var(--green)', color: '#fff' };
-    case S.MARKED: return { ...base, background: 'var(--purple)', color: '#fff' };
-    case S.MARKED_ANSWERED: return { ...base, background: 'var(--purple)', color: '#fff', border: '2px solid var(--green)' };
+    case S.NOT_VISITED:    return { ...base, background: 'var(--grey)',   color: '#fff' };
+    case S.NOT_ANSWERED:   return { ...base, background: 'var(--red)',    color: '#fff' };
+    case S.ANSWERED:       return { ...base, background: 'var(--green)',  color: '#fff' };
+    case S.MARKED:         return { ...base, background: 'var(--purple)', color: '#fff' };
+    case S.MARKED_ANSWERED:return { ...base, background: 'var(--purple)', color: '#fff', border: '2px solid var(--green)' };
     default: return base;
   }
 }
@@ -111,9 +78,33 @@ function bubbleStyle(state, selected) {
 // ── Format time ───────────────────────────────────────────────
 function fmtTime(s) {
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
-  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-  return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 }
+
+// ── Zoom-able question image ──────────────────────────────────
+function QuestionImage({ src, alt }) {
+  const [zoomed, setZoomed] = useState(false);
+  if (!src) return null;
+  return (
+    <>
+      <img
+        src={src} alt={alt || 'Question'}
+        className="q-image q-image-zoom"
+        onClick={() => setZoomed(true)}
+        onError={e => { e.target.style.display = 'none'; }}
+      />
+      {zoomed && (
+        <div className="zoom-overlay" onClick={() => setZoomed(false)}>
+          <img src={src} alt={alt || 'Question'} onClick={e => e.stopPropagation()} />
+        </div>
+      )}
+    </>
+  );
+}
+
+// ── Option button labels ──────────────────────────────────────
+const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
 // ═══════════════════════════════════════════════════════════════
 //  SCREEN: HOME / TEST SELECTION
@@ -121,7 +112,7 @@ function fmtTime(s) {
 function HomeScreen({ dark, setDark, onSelect }) {
   const grouped = getTestsBySubject();
   const subjectColors = { Physics: '--phys', Chemistry: '--chem', Mathematics: '--math' };
-  const subjectIcons = { Physics: '⚡', Chemistry: '⚗️', Mathematics: '∑' };
+  const subjectIcons  = { Physics: '⚡', Chemistry: '⚗️', Mathematics: '∑' };
 
   return (
     <div style={{ minHeight: '100vh', padding: '0 0 60px' }}>
@@ -158,17 +149,14 @@ function HomeScreen({ dark, setDark, onSelect }) {
           Select Your Test
         </div>
         <div style={{ color: 'var(--text2)', marginTop: 12, fontSize: '1rem' }}>
-          JEE Main Practice Tests — Exam & Practice Modes
+          JEE Main Practice Tests — Full Computer Based Test Experience
         </div>
-        <div style={{
-          display: 'flex', gap: 24, justifyContent: 'center', marginTop: 24,
-          flexWrap: 'wrap'
-        }}>
+        <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 24, flexWrap: 'wrap' }}>
           {[
             { label: `${tests.length} Test${tests.length !== 1 ? 's' : ''}`, icon: '📋' },
-            { label: 'Image Questions', icon: '🖼️' },
+            { label: '75 Questions each', icon: '❓' },
             { label: '+4 / −1 Marking', icon: '📊' },
-            { label: 'Exam & Practice Modes', icon: '🎯' },
+            { label: '180 Min Duration', icon: '⏱️' },
           ].map(item => (
             <div key={item.label} style={{
               background: 'var(--bg)', border: '1px solid var(--border)',
@@ -212,7 +200,6 @@ function HomeScreen({ dark, setDark, onSelect }) {
           </div>
         ))}
 
-        {/* Add more tests info */}
         <div style={{
           border: '2px dashed var(--border2)', borderRadius: 12, padding: 24,
           textAlign: 'center', color: 'var(--text3)'
@@ -240,14 +227,9 @@ function TestCard({ test, result, color, onSelect }) {
       onMouseEnter={e => { e.currentTarget.style.borderColor = `var(${color})`; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.3)'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
     >
-      {/* Color accent */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `var(${color})`, borderRadius: '14px 14px 0 0' }} />
-
       <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 6 }}>{test.name}</div>
-      <div style={{ fontSize: '0.78rem', color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
-        {test.chapter}
-      </div>
-
+      <div style={{ fontSize: '0.78rem', color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>{test.chapter}</div>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
         {sections.map(s => (
           <span key={s} style={{
@@ -258,7 +240,6 @@ function TestCard({ test, result, color, onSelect }) {
           }}>{s}</span>
         ))}
       </div>
-
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>
           {test.totalQuestions}Q · {Math.round(test.duration / 60)} min · {test.maxMarks} marks
@@ -269,14 +250,9 @@ function TestCard({ test, result, color, onSelect }) {
             color: result.score >= 0 ? 'var(--green)' : 'var(--red)',
             background: result.score >= 0 ? '#22c55e22' : '#ef444422',
             padding: '3px 8px', borderRadius: 6
-          }}>
-            {result.score}/{test.maxMarks}
-          </div>
+          }}>{result.score}/{test.maxMarks}</div>
         ) : (
-          <div style={{
-            fontSize: '0.75rem', color: 'var(--text3)',
-            background: 'var(--bg3)', padding: '3px 8px', borderRadius: 6
-          }}>Not attempted</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text3)', background: 'var(--bg3)', padding: '3px 8px', borderRadius: 6 }}>Not attempted</div>
         )}
       </div>
     </div>
@@ -284,177 +260,95 @@ function TestCard({ test, result, color, onSelect }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SCREEN: INSTRUCTIONS (with mode selector)
+//  SCREEN: INSTRUCTIONS
 // ═══════════════════════════════════════════════════════════════
 function InstructionsScreen({ test, dark, setDark, onStart, onBack }) {
   const [duration, setDuration] = useState(Math.round(test.duration / 60));
-  const [mode, setMode] = useState(test.mode || 'exam');
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
       <div style={{
         background: 'var(--bg2)', borderBottom: '1px solid var(--border)',
         padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         height: 60, flexShrink: 0
       }}>
-        <button onClick={onBack} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 8, padding: '7px 14px', color: 'var(--text2)', fontSize: '0.85rem' }}>
-          ← Back
-        </button>
+        <button onClick={onBack} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 8, padding: '7px 14px', color: 'var(--text2)', fontSize: '0.85rem' }}>← Back</button>
         <div style={{ fontWeight: 700 }}>{test.name}</div>
-        <button onClick={() => setDark(!dark)} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 8, padding: '7px 14px', color: 'var(--text2)', fontSize: '0.85rem' }}>
-          {dark ? '☀️' : '🌙'}
-        </button>
+        <button onClick={() => setDark(!dark)} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 8, padding: '7px 14px', color: 'var(--text2)', fontSize: '0.85rem' }}>{dark ? '☀️' : '🌙'}</button>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '32px 24px', maxWidth: 800, margin: '0 auto', width: '100%' }}>
         <div className="slide-up">
-          <h1 style={{ fontWeight: 800, fontSize: '1.8rem', letterSpacing: '-0.03em', marginBottom: 6 }}>
-            General Instructions
-          </h1>
+          <h1 style={{ fontWeight: 800, fontSize: '1.8rem', letterSpacing: '-0.03em', marginBottom: 6 }}>General Instructions</h1>
           <div style={{ color: 'var(--text3)', marginBottom: 32 }}>Please read carefully before starting the test</div>
 
-          {/* ── Mode Selector ───────────────────────────── */}
-          <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
-            <div style={{ fontWeight: 600, marginBottom: 16 }}>🎯 Choose Mode</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              {/* Exam Mode Card */}
-              <button onClick={() => setMode('exam')} style={{
-                background: mode === 'exam' ? '#3b82f622' : 'var(--bg3)',
-                border: `2px solid ${mode === 'exam' ? 'var(--accent)' : 'var(--border)'}`,
-                borderRadius: 12, padding: 20, textAlign: 'left',
-                transition: 'all 0.15s'
-              }}>
-                <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>{mode === 'exam' ? '🏆' : '🏛️'}</div>
-                <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 4, color: mode === 'exam' ? 'var(--accent2)' : 'var(--text)' }}>Exam Mode</div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text3)', lineHeight: 1.5 }}>
-                  Full JEE simulation with countdown timer, +4/−1 marking, auto-submit
-                </div>
-              </button>
-              {/* Practice Mode Card */}
-              <button onClick={() => setMode('practice')} style={{
-                background: mode === 'practice' ? '#22c55e22' : 'var(--bg3)',
-                border: `2px solid ${mode === 'practice' ? 'var(--green)' : 'var(--border)'}`,
-                borderRadius: 12, padding: 20, textAlign: 'left',
-                transition: 'all 0.15s'
-              }}>
-                <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>{mode === 'practice' ? '📖' : '📝'}</div>
-                <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 4, color: mode === 'practice' ? 'var(--green)' : 'var(--text)' }}>Practice Mode</div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text3)', lineHeight: 1.5 }}>
-                  No timer, progress bar, instant solutions, no negative marking
-                </div>
-              </button>
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--accent)44', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+            <div style={{ fontWeight: 600, marginBottom: 12, color: 'var(--accent2)' }}>⏱️ Set Test Duration</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <input
+                type="number" value={duration} min={10} max={300}
+                onChange={e => setDuration(Number(e.target.value))}
+                style={{
+                  background: 'var(--bg3)', border: '1px solid var(--border2)', borderRadius: 8,
+                  padding: '10px 16px', color: 'var(--text)', fontSize: '1.2rem', width: 100, textAlign: 'center'
+                }}
+              />
+              <span style={{ color: 'var(--text2)' }}>minutes</span>
+              <span style={{ color: 'var(--text3)', fontSize: '0.85rem' }}>(Default: {Math.round(test.duration / 60)} min)</span>
             </div>
           </div>
 
-          {/* Timer setting (exam mode only) */}
-          {mode === 'exam' && (
-            <div style={{ background: 'var(--bg2)', border: '1px solid var(--accent)44', borderRadius: 12, padding: 20, marginBottom: 24 }}>
-              <div style={{ fontWeight: 600, marginBottom: 12, color: 'var(--accent2)' }}>⏱️ Set Test Duration</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <input
-                  type="number" value={duration} min={10} max={300}
-                  onChange={e => setDuration(Number(e.target.value))}
-                  style={{
-                    background: 'var(--bg3)', border: '1px solid var(--border2)', borderRadius: 8,
-                    padding: '10px 16px', color: 'var(--text)', fontSize: '1.2rem',
-                    width: 100, textAlign: 'center'
-                  }}
-                />
-                <span style={{ color: 'var(--text2)' }}>minutes</span>
-                <span style={{ color: 'var(--text3)', fontSize: '0.85rem' }}>
-                  (Default: {Math.round(test.duration / 60)} min)
-                </span>
-              </div>
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+            <div style={{ fontWeight: 600, marginBottom: 16 }}>📊 Marking Scheme</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+              {[
+                { label: 'Correct', value: '+4', bg: '#22c55e22', color: 'var(--green)' },
+                { label: 'Wrong',   value: '−1', bg: '#ef444422', color: 'var(--red)' },
+                { label: 'Skipped', value: '0',  bg: '#64748b22', color: 'var(--text3)' },
+              ].map(item => (
+                <div key={item.label} style={{ background: item.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: item.color, fontFamily: 'JetBrains Mono' }}>{item.value}</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text2)', marginTop: 4 }}>{item.label}</div>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
 
-          {/* Marking scheme (exam mode only) */}
-          {mode === 'exam' && (
-            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
-              <div style={{ fontWeight: 600, marginBottom: 16 }}>📊 Marking Scheme</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-                {[
-                  { label: 'Correct', value: '+4', bg: '#22c55e22', color: 'var(--green)' },
-                  { label: 'Wrong', value: '−1', bg: '#ef444422', color: 'var(--red)' },
-                  { label: 'Skipped', value: '0', bg: '#64748b22', color: 'var(--text3)' },
-                ].map(item => (
-                  <div key={item.label} style={{
-                    background: item.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center'
-                  }}>
-                    <div style={{ fontSize: '1.6rem', fontWeight: 800, color: item.color, fontFamily: 'JetBrains Mono' }}>{item.value}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text2)', marginTop: 4 }}>{item.label}</div>
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+            <div style={{ fontWeight: 600, marginBottom: 16 }}>🎨 Question Palette Legend</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                { state: S.NOT_VISITED,     label: 'Not Visited',         desc: 'You have not visited this question yet.' },
+                { state: S.NOT_ANSWERED,    label: 'Not Answered',        desc: 'You visited but did not answer.' },
+                { state: S.ANSWERED,        label: 'Answered',            desc: 'You have given an answer.' },
+                { state: S.MARKED,          label: 'Marked for Review',   desc: 'Marked for review without answer.' },
+                { state: S.MARKED_ANSWERED, label: 'Marked + Answered',   desc: 'Answered and marked for review.' },
+              ].map(item => (
+                <div key={item.state} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={bubbleStyle(item.state, false)}>9</div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{item.label}</div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>{item.desc}</div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
 
-          {/* Palette legend (exam mode only) */}
-          {mode === 'exam' && (
-            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
-              <div style={{ fontWeight: 600, marginBottom: 16 }}>🎨 Question Palette Legend</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[
-                  { state: S.NOT_VISITED, label: 'Not Visited', desc: 'You have not visited this question yet.' },
-                  { state: S.NOT_ANSWERED, label: 'Not Answered', desc: 'You visited but did not answer.' },
-                  { state: S.ANSWERED, label: 'Answered', desc: 'You have given an answer.' },
-                  { state: S.MARKED, label: 'Marked for Review', desc: 'Marked for review without answer.' },
-                  { state: S.MARKED_ANSWERED, label: 'Marked + Answered', desc: 'Answered and marked for review.' },
-                ].map(item => (
-                  <div key={item.state} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <div style={bubbleStyle(item.state, false)}>9</div>
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{item.label}</div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>{item.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Practice mode info */}
-          {mode === 'practice' && (
-            <div style={{ background: 'var(--bg2)', border: '1px solid var(--green)44', borderRadius: 12, padding: 20, marginBottom: 24 }}>
-              <div style={{ fontWeight: 600, marginBottom: 16, color: 'var(--green)' }}>📖 Practice Mode Features</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[
-                  { icon: '📊', text: 'Progress bar tracks how many questions you\'ve attempted' },
-                  { icon: '✅', text: 'Click "Show Answer & Solution" to reveal the answer below each question' },
-                  { icon: '🔄', text: 'No negative marking — track your learning without pressure' },
-                  { icon: '🖼️', text: 'Questions and solutions are displayed as images with click-to-zoom' },
-                ].map(item => (
-                  <div key={item.icon} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <div style={{ fontSize: '1.2rem' }}>{item.icon}</div>
-                    <div style={{ fontSize: '0.88rem', color: 'var(--text2)', lineHeight: 1.5 }}>{item.text}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* General rules */}
           <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 32 }}>
             <div style={{ fontWeight: 600, marginBottom: 16 }}>📋 General Rules</div>
             {[
               `This test has ${test.totalQuestions} questions across Physics, Chemistry, and Mathematics.`,
-              'Questions are displayed as images. Click to zoom in.',
               'Each section has 20 MCQ questions (4 options, 1 correct) and 5 Integer type questions.',
-              'Integer type questions: answer is a number (0–999).',
-              ...(mode === 'exam' ? [
-                'Use "Mark for Review & Next" to flag questions you want to revisit.',
-                'Use "Clear Response" to remove your selected answer.',
-                'The test auto-submits when the timer reaches zero.',
-                'You will receive a warning (red pulsing timer) in the last 5 minutes.',
-              ] : [
-                'Navigate freely between questions — no time pressure.',
-                'Review solutions immediately after attempting each question.',
-              ]),
+              'Integer type questions: answer is a number (0–999), no negative marking.',
+              'Use "Mark for Review & Next" to flag questions you want to revisit.',
+              'Use "Clear Response" to remove your selected answer.',
+              'The test auto-submits when the timer reaches zero.',
+              'You will receive a warning (red pulsing timer) in the last 5 minutes.',
             ].map((rule, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, alignItems: 'flex-start' }}>
                 <div style={{
-                  width: 22, height: 22, borderRadius: '50%', background: mode === 'exam' ? 'var(--accent)' : 'var(--green)',
+                  width: 22, height: 22, borderRadius: '50%', background: 'var(--accent)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '0.7rem', fontWeight: 700, flexShrink: 0, marginTop: 2
                 }}>{i + 1}</div>
@@ -463,20 +357,11 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack }) {
             ))}
           </div>
 
-          <button onClick={() => {
-            onStart({
-              mode,
-              duration: mode === 'exam' ? duration * 60 : null
-            });
-          }} style={{
+          <button onClick={() => onStart(duration * 60)} style={{
             width: '100%', padding: '16px', borderRadius: 12,
-            background: mode === 'exam'
-              ? 'linear-gradient(135deg, var(--accent), var(--purple))'
-              : 'linear-gradient(135deg, var(--green), #06b6d4)',
+            background: 'linear-gradient(135deg, var(--accent), var(--purple))',
             color: '#fff', fontWeight: 700, fontSize: '1.1rem', letterSpacing: '0.01em'
-          }}>
-            {mode === 'exam' ? 'Start Exam →' : 'Start Practice →'}
-          </button>
+          }}>Start Test →</button>
         </div>
       </div>
     </div>
@@ -484,63 +369,51 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SCREEN: CBT TEST (Exam Mode + Practice Mode)
+//  SCREEN: CBT TEST
 // ═══════════════════════════════════════════════════════════════
-function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmit }) {
+function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
   const qs = test.questions;
   const sections = ['Physics', 'Chemistry', 'Mathematics'];
 
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [answers, setAnswers] = useState(() => new Array(qs.length).fill(null));
-  const [states, setStates] = useState(() => new Array(qs.length).fill(S.NOT_VISITED));
-  const [intInputs, setIntInputs] = useState(() => new Array(qs.length).fill(''));
-  const [timeLeft, setTimeLeft] = useState(initDuration);
+  const [currentIdx, setCurrentIdx]   = useState(0);
+  const [answers, setAnswers]         = useState(() => new Array(qs.length).fill(null));
+  const [states, setStates]           = useState(() => new Array(qs.length).fill(S.NOT_VISITED));
+  const [intInputs, setIntInputs]     = useState(() => new Array(qs.length).fill(''));
+  const [timeLeft, setTimeLeft]       = useState(initDuration);
   const [showConfirm, setShowConfirm] = useState(false);
   const [activeSection, setActiveSection] = useState('Physics');
-  const [showSolution, setShowSolution] = useState({});
   const timerRef = useRef(null);
 
   const currentQ = qs[currentIdx];
-  const isPractice = mode === 'practice';
 
-  // Start timer for exam mode
-  if (!isPractice) {
-    useEffect(() => {
-      timerRef.current = setInterval(() => {
-        setTimeLeft(t => {
-          if (t <= 1) { clearInterval(timerRef.current); handleFinalSubmit(); return 0; }
-          return t - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timerRef.current);
-    }, []);
-  }
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      setTimeLeft(t => {
+        if (t <= 1) { clearInterval(timerRef.current); handleFinalSubmit(); return 0; }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timerRef.current);
+  }, []);
 
-  // Mark as not-answered when visiting
   useEffect(() => {
     setStates(prev => {
       if (prev[currentIdx] === S.NOT_VISITED) {
-        const next = [...prev];
-        next[currentIdx] = S.NOT_ANSWERED;
-        return next;
+        const next = [...prev]; next[currentIdx] = S.NOT_ANSWERED; return next;
       }
       return prev;
     });
   }, [currentIdx]);
 
-  const handleAnswer = (optIdx) => {
+  const handleAnswer = (optNum) => {
     if (currentQ.type === 'integer') return;
-    setAnswers(prev => { const a = [...prev]; a[currentIdx] = optIdx; return a; });
-    if (isPractice) {
-      setStates(prev => { const s = [...prev]; s[currentIdx] = S.ANSWERED; return s; });
-    } else {
-      setStates(prev => {
-        const s = [...prev];
-        s[currentIdx] = prev[currentIdx] === S.MARKED || prev[currentIdx] === S.MARKED_ANSWERED
-          ? S.MARKED_ANSWERED : S.ANSWERED;
-        return s;
-      });
-    }
+    setAnswers(prev => { const a = [...prev]; a[currentIdx] = optNum; return a; });
+    setStates(prev => {
+      const s = [...prev];
+      s[currentIdx] = (prev[currentIdx] === S.MARKED || prev[currentIdx] === S.MARKED_ANSWERED)
+        ? S.MARKED_ANSWERED : S.ANSWERED;
+      return s;
+    });
   };
 
   const handleIntInput = (val) => {
@@ -548,19 +421,15 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
     const num = Number(val);
     if (val !== '' && !isNaN(num)) {
       setAnswers(prev => { const a = [...prev]; a[currentIdx] = num; return a; });
-      if (isPractice) {
-        setStates(prev => { const s = [...prev]; s[currentIdx] = S.ANSWERED; return s; });
-      } else {
-        setStates(prev => {
-          const s = [...prev];
-          s[currentIdx] = prev[currentIdx] === S.MARKED || prev[currentIdx] === S.MARKED_ANSWERED
-            ? S.MARKED_ANSWERED : S.ANSWERED;
-          return s;
-        });
-      }
+      setStates(prev => {
+        const s = [...prev];
+        s[currentIdx] = (prev[currentIdx] === S.MARKED || prev[currentIdx] === S.MARKED_ANSWERED)
+          ? S.MARKED_ANSWERED : S.ANSWERED;
+        return s;
+      });
     } else {
       setAnswers(prev => { const a = [...prev]; a[currentIdx] = null; return a; });
-      if (!isPractice && states[currentIdx] !== S.MARKED && states[currentIdx] !== S.MARKED_ANSWERED) {
+      if (states[currentIdx] !== S.MARKED && states[currentIdx] !== S.MARKED_ANSWERED) {
         setStates(prev => { const s = [...prev]; s[currentIdx] = S.NOT_ANSWERED; return s; });
       }
     }
@@ -569,22 +438,17 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
   const handleClear = () => {
     setAnswers(prev => { const a = [...prev]; a[currentIdx] = null; return a; });
     setIntInputs(prev => { const a = [...prev]; a[currentIdx] = ''; return a; });
-    if (isPractice) {
-      setStates(prev => { const s = [...prev]; s[currentIdx] = S.NOT_ANSWERED; return s; });
-    } else {
-      setStates(prev => {
-        const s = [...prev];
-        s[currentIdx] = prev[currentIdx] === S.MARKED_ANSWERED ? S.MARKED : S.NOT_ANSWERED;
-        return s;
-      });
-    }
+    setStates(prev => {
+      const s = [...prev];
+      s[currentIdx] = prev[currentIdx] === S.MARKED_ANSWERED ? S.MARKED : S.NOT_ANSWERED;
+      return s;
+    });
   };
 
   const handleMarkReview = () => {
     setStates(prev => {
       const s = [...prev];
-      const hasAns = answers[currentIdx] !== null;
-      s[currentIdx] = hasAns ? S.MARKED_ANSWERED : S.MARKED;
+      s[currentIdx] = answers[currentIdx] !== null ? S.MARKED_ANSWERED : S.MARKED;
       return s;
     });
     goNext();
@@ -594,8 +458,7 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
   const goPrev = () => { if (currentIdx > 0) setCurrentIdx(i => i - 1); };
 
   const handleFinalSubmit = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    // Calculate results
+    clearInterval(timerRef.current);
     let score = 0, correct = 0, wrong = 0, skipped = 0;
     const details = qs.map((q, i) => {
       const ans = answers[i];
@@ -608,23 +471,22 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
         else { score -= 1; wrong++; return { qid: q.id, ans, correct: q.correctAnswer, result: 'wrong' }; }
       }
     });
-    const result = { score, correct, wrong, skipped, details, answers: [...answers], mode, date: new Date().toISOString() };
+    const result = { score, correct, wrong, skipped, details, answers: [...answers], date: new Date().toISOString() };
     saveResult(test.id, result);
     onSubmit(result);
-  }, [answers, qs, test.id, mode, onSubmit]);
+  }, [answers, qs, test.id, onSubmit]);
 
-  const sectionQs = (sec) => qs.filter(q => q.section === sec);
+  const sectionQs    = (sec) => qs.filter(q => q.section === sec);
   const sectionStart = (sec) => qs.findIndex(q => q.section === sec);
 
-  const answered = answers.filter(a => a !== null).length;
-  const marked = states.filter(s => s === S.MARKED || s === S.MARKED_ANSWERED).length;
-  const notAnswered = states.filter(s => s === S.NOT_ANSWERED).length;
+  const answered   = answers.filter(a => a !== null).length;
+  const marked     = states.filter(s => s === S.MARKED || s === S.MARKED_ANSWERED).length;
+  const notAnswered= states.filter(s => s === S.NOT_ANSWERED).length;
   const notVisited = states.filter(s => s === S.NOT_VISITED).length;
+  const isLastFive = timeLeft <= 300;
 
-  const isLastFive = !isPractice && timeLeft <= 300;
-
-  // ── Practice mode: progress ─────────────────────────
-  const progressPct = qs.length > 0 ? Math.round((answered / qs.length) * 100) : 0;
+  // Determine the image path for a question
+  const questionImageSrc = (q) => q.questionImage || `/q/q${q.id}.jpg`;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
@@ -635,38 +497,18 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
         height: 56, flexShrink: 0
       }}>
         <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{test.name}</div>
-
-        {isPractice ? (
-          /* Practice mode: progress bar */
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, maxWidth: 400, margin: '0 20px' }}>
-            <div style={{ flex: 1, background: 'var(--bg3)', borderRadius: 8, height: 10, overflow: 'hidden' }}>
-              <div style={{
-                width: `${progressPct}%`, height: '100%',
-                background: 'linear-gradient(90deg, var(--green), var(--accent))',
-                borderRadius: 8, transition: 'width 0.3s ease'
-              }} />
-            </div>
-            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text2)', fontFamily: 'JetBrains Mono', minWidth: 60 }}>
-              {answered}/{qs.length}
-            </span>
-          </div>
-        ) : (
-          /* Exam mode: timer */
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            background: isLastFive ? '#ef444422' : 'var(--bg3)',
-            border: `1px solid ${isLastFive ? 'var(--red)' : 'var(--border)'}`,
-            borderRadius: 8, padding: '8px 16px'
-          }}>
-            <span style={{ fontSize: '1rem' }}>⏱️</span>
-            <span style={{
-              fontFamily: 'JetBrains Mono', fontWeight: 700, fontSize: '1.1rem',
-              color: isLastFive ? 'var(--red)' : 'var(--text)'
-            }}>{fmtTime(timeLeft)}</span>
-            <span className={isLastFive ? 'pulse-red' : ''} style={isLastFive ? { display: 'inline-block' } : {}} />
-          </div>
-        )}
-
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          background: isLastFive ? '#ef444422' : 'var(--bg3)',
+          border: `1px solid ${isLastFive ? 'var(--red)' : 'var(--border)'}`,
+          borderRadius: 8, padding: '8px 16px'
+        }} className={isLastFive ? 'pulse-red' : ''}>
+          <span style={{ fontSize: '1rem' }}>⏱️</span>
+          <span style={{
+            fontFamily: 'JetBrains Mono', fontWeight: 700, fontSize: '1.1rem',
+            color: isLastFive ? 'var(--red)' : 'var(--text)'
+          }}>{fmtTime(timeLeft)}</span>
+        </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={() => setDark(!dark)} style={{
             background: 'var(--bg3)', border: '1px solid var(--border)',
@@ -675,31 +517,25 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
           <button onClick={() => setShowConfirm(true)} style={{
             background: 'var(--red)', borderRadius: 8, padding: '7px 16px',
             color: '#fff', fontWeight: 700, fontSize: '0.85rem'
-          }}>{isPractice ? 'Finish' : 'Submit Test'}</button>
+          }}>Submit Test</button>
         </div>
       </div>
 
       {/* Section tabs */}
-      <div style={{
-        background: 'var(--bg2)', borderBottom: '1px solid var(--border)',
-        display: 'flex', flexShrink: 0
-      }}>
+      <div style={{ background: 'var(--bg2)', borderBottom: '1px solid var(--border)', display: 'flex', flexShrink: 0 }}>
         {sections.map(sec => {
-          const secQs = sectionQs(sec);
-          const secAnswered = secQs.filter((q, i) => answers[sectionStart(sec) + i] !== null).length;
-          const isActive = sec === activeSection;
-          const col = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
+          const secQs      = sectionQs(sec);
+          const start      = sectionStart(sec);
+          const secAnswered = secQs.filter((_, i) => answers[start + i] !== null).length;
+          const isActive   = sec === activeSection;
+          const col        = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
           return (
-            <button key={sec} onClick={() => {
-              setActiveSection(sec);
-              setCurrentIdx(sectionStart(sec));
-            }} style={{
+            <button key={sec} onClick={() => { setActiveSection(sec); setCurrentIdx(sectionStart(sec)); }} style={{
               flex: 1, padding: '10px 8px', borderRadius: 0,
               background: isActive ? 'var(--bg)' : 'transparent',
               color: isActive ? col : 'var(--text3)',
               borderBottom: isActive ? `2px solid ${col}` : '2px solid transparent',
-              fontWeight: isActive ? 700 : 500, fontSize: '0.85rem',
-              transition: 'all 0.15s'
+              fontWeight: isActive ? 700 : 500, fontSize: '0.85rem', transition: 'all 0.15s'
             }}>
               {sec} <span style={{ fontSize: '0.72rem', opacity: 0.8 }}>({secAnswered}/{secQs.length})</span>
             </button>
@@ -709,11 +545,13 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
 
       {/* Main content */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+
         {/* Question area */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
           <div key={currentIdx} className="fade-in">
+
             {/* Q header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
               <div style={{
                 background: currentQ.section === 'Physics' ? '#06b6d422' : currentQ.section === 'Chemistry' ? '#10b98122' : '#f59e0b22',
                 border: `1px solid ${currentQ.section === 'Physics' ? '#06b6d444' : currentQ.section === 'Chemistry' ? '#10b98144' : '#f59e0b44'}`,
@@ -729,43 +567,45 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
               </div>
             </div>
 
-            {/* Question image */}
-            <div style={{ marginBottom: 20 }}>
-              <QImage src={currentQ.q} alt={`Question ${currentQ.id}`} />
+            {/* ── Question image ── */}
+            <div style={{
+              background: 'var(--bg2)', border: '1px solid var(--border)',
+              borderRadius: 12, padding: '16px 20px', marginBottom: 20
+            }}>
+              <div style={{ color: 'var(--text3)', fontSize: '0.7rem', marginBottom: 10, fontWeight: 600 }}>
+                Q{currentQ.id} &nbsp;·&nbsp; Click image to zoom
+              </div>
+              <QuestionImage src={questionImageSrc(currentQ)} alt={`Question ${currentQ.id}`} />
             </div>
 
-            {/* Options or Integer input */}
-            {currentQ.type === 'mcq' ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {currentQ.options.map((opt, oi) => {
-                  const optNum = oi + 1;
+            {/* ── MCQ: A / B / C / D buttons only (no text) ── */}
+            {currentQ.type === 'mcq' && (
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
+                {OPTION_LABELS.map((label, oi) => {
+                  const optNum    = oi + 1;
                   const isSelected = answers[currentIdx] === optNum;
                   return (
                     <button key={oi} onClick={() => handleAnswer(optNum)} style={{
-                      background: isSelected ? '#3b82f622' : 'var(--bg2)',
-                      border: `1px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}`,
-                      borderRadius: 10, padding: '14px 18px', textAlign: 'left',
-                      color: 'var(--text)', display: 'flex', alignItems: 'flex-start', gap: 12,
+                      width: 56, height: 56, borderRadius: 12,
+                      background: isSelected ? 'var(--accent)' : 'var(--bg2)',
+                      border: `2px solid ${isSelected ? 'var(--accent)' : 'var(--border2)'}`,
+                      color: isSelected ? '#fff' : 'var(--text2)',
+                      fontSize: '1.1rem', fontWeight: 800,
+                      boxShadow: isSelected ? '0 4px 16px rgba(59,130,246,0.35)' : 'none',
+                      transform: isSelected ? 'scale(1.08)' : 'scale(1)',
                       transition: 'all 0.15s',
-                    }}
-                      onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--border2)'; e.currentTarget.style.background = 'var(--bg3)'; } }}
-                      onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--bg2)'; } }}
-                    >
-                      <div style={{
-                        width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                        background: isSelected ? 'var(--accent)' : 'var(--bg3)',
-                        border: `1px solid ${isSelected ? 'var(--accent)' : 'var(--border2)'}`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '0.75rem', fontWeight: 700,
-                        color: isSelected ? '#fff' : 'var(--text2)'
-                      }}>{['A', 'B', 'C', 'D'][oi]}</div>
-                      <div style={{ flex: 1, lineHeight: 1.6, fontSize: '0.95rem', paddingTop: 2 }}>{opt}</div>
-                    </button>
+                    }}>{label}</button>
                   );
                 })}
               </div>
-            ) : (
-              <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20 }}>
+            )}
+
+            {/* ── Integer type input ── */}
+            {currentQ.type === 'integer' && (
+              <div style={{
+                background: 'var(--bg2)', border: '1px solid var(--border)',
+                borderRadius: 12, padding: 20, marginBottom: 20
+              }}>
                 <div style={{ color: 'var(--text2)', fontSize: '0.88rem', marginBottom: 12 }}>
                   Enter your answer (integer, 0–999):
                 </div>
@@ -783,37 +623,12 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
               </div>
             )}
 
-            {/* Practice mode: Show Answer button */}
-            {isPractice && (
-              <div style={{ marginTop: 16 }}>
-                <button onClick={() => {
-                  setShowSolution(prev => ({ ...prev, [currentQ.id]: !prev[currentQ.id] }));
-                }} style={{
-                  background: 'var(--green)', borderRadius: 8, padding: '10px 20px',
-                  color: '#fff', fontWeight: 700, fontSize: '0.9rem',
-                  display: 'flex', alignItems: 'center', gap: 8
-                }}>
-                  {showSolution[currentQ.id] ? '▲ Hide Solution' : '▼ Show Answer & Solution'}
-                </button>
-                {showSolution[currentQ.id] && (
-                  <div className="slide-up" style={{ marginTop: 16 }}>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--green)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Solution
-                    </div>
-                    <QImage src={currentQ.solution} alt={`Solution ${currentQ.id}`} />
-                  </div>
-                )}
-              </div>
-            )}
-
             {/* Action buttons */}
-            <div style={{ display: 'flex', gap: 10, marginTop: 24, flexWrap: 'wrap' }}>
-              {!isPractice && (
-                <button onClick={handleMarkReview} style={{
-                  background: 'var(--purple)', borderRadius: 8, padding: '10px 18px',
-                  color: '#fff', fontWeight: 600, fontSize: '0.85rem'
-                }}>Mark for Review & Next</button>
-              )}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <button onClick={handleMarkReview} style={{
+                background: 'var(--purple)', borderRadius: 8, padding: '10px 18px',
+                color: '#fff', fontWeight: 600, fontSize: '0.85rem'
+              }}>Mark for Review & Next</button>
               <button onClick={handleClear} style={{
                 background: 'var(--bg3)', border: '1px solid var(--border2)',
                 borderRadius: 8, padding: '10px 18px', color: 'var(--text2)', fontWeight: 600, fontSize: '0.85rem'
@@ -821,9 +636,9 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
               <div style={{ flex: 1 }} />
               <button onClick={goPrev} disabled={currentIdx === 0} style={{
                 background: 'var(--bg3)', border: '1px solid var(--border2)',
-                borderRadius: 8, padding: '10px 18px', color: currentIdx === 0 ? 'var(--text3)' : 'var(--text2)',
-                fontWeight: 600, fontSize: '0.85rem',
-                opacity: currentIdx === 0 ? 0.5 : 1
+                borderRadius: 8, padding: '10px 18px',
+                color: currentIdx === 0 ? 'var(--text3)' : 'var(--text2)',
+                fontWeight: 600, fontSize: '0.85rem', opacity: currentIdx === 0 ? 0.5 : 1
               }}>← Previous</button>
               <button onClick={goNext} disabled={currentIdx === qs.length - 1} style={{
                 background: 'var(--accent)', borderRadius: 8, padding: '10px 22px',
@@ -834,58 +649,56 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
           </div>
         </div>
 
-        {/* Right palette (exam mode only) */}
-        {!isPractice && (
-          <div style={{
-            width: 240, borderLeft: '1px solid var(--border)',
-            background: 'var(--bg2)', overflowY: 'auto', flexShrink: 0
-          }}>
-            <div style={{ padding: '16px 14px' }}>
-              {/* Stats */}
-              <div style={{
-                background: 'var(--bg3)', borderRadius: 10, padding: 12, marginBottom: 16,
-                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8
-              }}>
-                {[
-                  { label: 'Answered', val: answered, color: 'var(--green)' },
-                  { label: 'Marked', val: marked, color: 'var(--purple)' },
-                  { label: 'Not Ans.', val: notAnswered, color: 'var(--red)' },
-                  { label: 'Not Visit.', val: notVisited, color: 'var(--grey)' },
-                ].map(item => (
-                  <div key={item.label} style={{ textAlign: 'center' }}>
-                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: item.color }}>{item.val}</div>
-                    <div style={{ fontSize: '0.65rem', color: 'var(--text3)' }}>{item.label}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Section question grids */}
-              {sections.map(sec => {
-                const start = sectionStart(sec);
-                const secQsList = sectionQs(sec);
-                const col = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
-                return (
-                  <div key={sec} style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: col, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                      {sec}
-                    </div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                      {secQsList.map((q, i) => {
-                        const globalIdx = start + i;
-                        return (
-                          <div key={globalIdx}
-                            style={bubbleStyle(states[globalIdx], globalIdx === currentIdx)}
-                            onClick={() => { setCurrentIdx(globalIdx); setActiveSection(sec); }}
-                          >{globalIdx + 1}</div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
+        {/* Right palette */}
+        <div style={{
+          width: 240, borderLeft: '1px solid var(--border)',
+          background: 'var(--bg2)', overflowY: 'auto', flexShrink: 0
+        }}>
+          <div style={{ padding: '16px 14px' }}>
+            {/* Stats */}
+            <div style={{
+              background: 'var(--bg3)', borderRadius: 10, padding: 12, marginBottom: 16,
+              display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8
+            }}>
+              {[
+                { label: 'Answered',  val: answered,    color: 'var(--green)' },
+                { label: 'Marked',    val: marked,      color: 'var(--purple)' },
+                { label: 'Not Ans.',  val: notAnswered, color: 'var(--red)' },
+                { label: 'Not Visit.',val: notVisited,  color: 'var(--grey)' },
+              ].map(item => (
+                <div key={item.label} style={{ textAlign: 'center' }}>
+                  <div style={{ fontWeight: 800, fontSize: '1.2rem', color: item.color }}>{item.val}</div>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text3)' }}>{item.label}</div>
+                </div>
+              ))}
             </div>
+
+            {/* Section question grids */}
+            {sections.map(sec => {
+              const start     = sectionStart(sec);
+              const secQsList = sectionQs(sec);
+              const col       = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
+              return (
+                <div key={sec} style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 700, color: col, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    {sec}
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                    {secQsList.map((q, i) => {
+                      const globalIdx = start + i;
+                      return (
+                        <div key={globalIdx}
+                          style={bubbleStyle(states[globalIdx], globalIdx === currentIdx)}
+                          onClick={() => { setCurrentIdx(globalIdx); setActiveSection(sec); }}
+                        >{globalIdx + 1}</div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Confirm dialog */}
@@ -898,27 +711,18 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
             background: 'var(--bg2)', border: '1px solid var(--border)',
             borderRadius: 16, padding: 32, maxWidth: 440, width: '90%'
           }} onClick={e => e.stopPropagation()}>
-            <div style={{ fontWeight: 800, fontSize: '1.3rem', marginBottom: 8 }}>
-              {isPractice ? 'Finish Practice?' : 'Submit Test?'}
-            </div>
+            <div style={{ fontWeight: 800, fontSize: '1.3rem', marginBottom: 8 }}>Submit Test?</div>
             <div style={{ color: 'var(--text3)', marginBottom: 24, fontSize: '0.9rem' }}>
-              {isPractice
-                ? `You have attempted ${answered} out of ${qs.length} questions.`
-                : <>Time remaining: <strong style={{ color: 'var(--orange)' }}>{fmtTime(timeLeft)}</strong></>
-              }
+              Time remaining: <strong style={{ color: 'var(--orange)' }}>{fmtTime(timeLeft)}</strong>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 24 }}>
               {[
-                { label: 'Answered', val: answered, color: 'var(--green)', bg: '#22c55e22' },
-                { label: 'Not Answered', val: qs.length - answered, color: 'var(--red)', bg: '#ef444422' },
-                ...(isPractice ? [] : [
-                  { label: 'Marked', val: marked, color: 'var(--purple)', bg: '#a855f722' },
-                  { label: 'Not Visited', val: notVisited, color: 'var(--grey)', bg: '#47556922' },
-                ]),
+                { label: 'Answered',    val: answered,    color: 'var(--green)',  bg: '#22c55e22' },
+                { label: 'Not Answered',val: notAnswered, color: 'var(--red)',    bg: '#ef444422' },
+                { label: 'Marked',      val: marked,      color: 'var(--purple)', bg: '#a855f722' },
+                { label: 'Not Visited', val: notVisited,  color: 'var(--grey)',   bg: '#47556922' },
               ].map(item => (
-                <div key={item.label} style={{
-                  background: item.bg, borderRadius: 10, padding: '12px', textAlign: 'center'
-                }}>
+                <div key={item.label} style={{ background: item.bg, borderRadius: 10, padding: '12px', textAlign: 'center' }}>
                   <div style={{ fontSize: '1.6rem', fontWeight: 800, color: item.color }}>{item.val}</div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text2)', marginTop: 2 }}>{item.label}</div>
                 </div>
@@ -928,11 +732,11 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
               <button onClick={() => setShowConfirm(false)} style={{
                 flex: 1, padding: '12px', borderRadius: 10, fontWeight: 600,
                 background: 'var(--bg3)', border: '1px solid var(--border2)', color: 'var(--text2)'
-              }}>{isPractice ? 'Continue' : 'Continue Test'}</button>
+              }}>Continue Test</button>
               <button onClick={handleFinalSubmit} style={{
                 flex: 1, padding: '12px', borderRadius: 10, fontWeight: 700,
                 background: 'var(--red)', color: '#fff'
-              }}>{isPractice ? 'Finish' : 'Submit Now'}</button>
+              }}>Submit Now</button>
             </div>
           </div>
         </div>
@@ -946,13 +750,14 @@ function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmi
 // ═══════════════════════════════════════════════════════════════
 function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
   const qs = test.questions;
-  const isPractice = result.mode === 'practice';
-  const [showSolution, setShowSolution] = useState({});
   const [filterSection, setFilterSection] = useState('All');
   const sections = ['All', 'Physics', 'Chemistry', 'Mathematics'];
-  const pct = test.maxMarks ? Math.round((result.score / test.maxMarks) * 100) : 0;
+  const pct = Math.round((result.score / test.maxMarks) * 100);
 
   const filteredQs = filterSection === 'All' ? qs : qs.filter(q => q.section === filterSection);
+
+  // Determine the image path for a question
+  const questionImageSrc = (q) => q.questionImage || `/q/q${q.id}.jpg`;
 
   return (
     <div style={{ minHeight: '100vh' }}>
@@ -981,45 +786,26 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
           marginBottom: 32, textAlign: 'center'
         }}>
           <div style={{ fontSize: '0.85rem', color: 'var(--text3)', marginBottom: 8 }}>Your Score</div>
-
-          {isPractice ? (
-            <>
-              <div style={{
-                fontSize: '4rem', fontWeight: 900, letterSpacing: '-0.04em',
-                color: 'var(--green)', lineHeight: 1
-              }}>{result.correct}</div>
-              <div style={{ fontSize: '1.2rem', color: 'var(--text2)', marginBottom: 24 }}>
-                correct out of {qs.length} attempted
-              </div>
-            </>
-          ) : (
-            <>
-              <div style={{
-                fontSize: '4rem', fontWeight: 900, letterSpacing: '-0.04em',
-                color: pct >= 60 ? 'var(--green)' : pct >= 35 ? 'var(--orange)' : 'var(--red)',
-                lineHeight: 1
-              }}>{result.score}</div>
-              <div style={{ fontSize: '1.2rem', color: 'var(--text2)', marginBottom: 24 }}>
-                out of {test.maxMarks}  ({pct}%)
-              </div>
-            </>
-          )}
-
+          <div style={{
+            fontSize: '4rem', fontWeight: 900, letterSpacing: '-0.04em',
+            color: pct >= 60 ? 'var(--green)' : pct >= 35 ? 'var(--orange)' : 'var(--red)',
+            lineHeight: 1
+          }}>{result.score}</div>
+          <div style={{ fontSize: '1.2rem', color: 'var(--text2)', marginBottom: 24 }}>
+            out of {test.maxMarks}  ({pct}%)
+          </div>
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             {[
               { label: 'Correct', val: result.correct, color: 'var(--green)', bg: '#22c55e22' },
-              { label: 'Wrong', val: result.wrong, color: 'var(--red)', bg: '#ef444422' },
+              { label: 'Wrong',   val: result.wrong,   color: 'var(--red)',   bg: '#ef444422' },
               { label: 'Skipped', val: result.skipped, color: 'var(--text3)', bg: '#64748b22' },
             ].map(item => (
-              <div key={item.label} style={{
-                background: item.bg, borderRadius: 12, padding: '16px 28px', minWidth: 100
-              }}>
+              <div key={item.label} style={{ background: item.bg, borderRadius: 12, padding: '16px 28px', minWidth: 100 }}>
                 <div style={{ fontSize: '2rem', fontWeight: 800, color: item.color }}>{item.val}</div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text2)', marginTop: 4 }}>{item.label}</div>
               </div>
             ))}
           </div>
-
           <div style={{ display: 'flex', gap: 12, marginTop: 24, justifyContent: 'center' }}>
             <button onClick={onRetry} style={{
               padding: '10px 24px', borderRadius: 10, fontWeight: 600,
@@ -1035,19 +821,19 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
         {/* Section-wise breakdown */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
           {['Physics', 'Chemistry', 'Mathematics'].map(sec => {
-            const secQs = qs.filter(q => q.section === sec);
-            const secDetails = result.details.filter((d, i) => qs[i].section === sec);
+            const secQs      = qs.filter(q => q.section === sec);
+            const secDetails = result.details.filter((_, i) => qs[i].section === sec);
             const secCorrect = secDetails.filter(d => d.result === 'correct').length;
-            const secScore = isPractice ? secCorrect : secCorrect * 4 - secDetails.filter(d => d.result === 'wrong').length;
-            const col = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
+            const secScore   = secCorrect * 4 - secDetails.filter(d => d.result === 'wrong').length;
+            const col        = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
             return (
               <div key={sec} style={{
                 background: 'var(--bg2)', border: '1px solid var(--border)',
                 borderRadius: 12, padding: 16, textAlign: 'center'
               }}>
                 <div style={{ fontSize: '0.75rem', fontWeight: 700, color: col, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{sec}</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>{isPractice ? `${secCorrect}/${secQs.length}` : secScore}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{secCorrect} correct</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>{secScore}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{secCorrect}/{secQs.length} correct</div>
               </div>
             );
           })}
@@ -1069,73 +855,92 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
             </div>
           </div>
 
-          {filteredQs.map((q, fi) => {
+          {filteredQs.map((q) => {
             const globalIdx = qs.indexOf(q);
-            const det = result.details[globalIdx];
+            const det       = result.details[globalIdx];
             const isCorrect = det.result === 'correct';
-            const isWrong = det.result === 'wrong';
-            const isSkipped = det.result === 'skipped' || det.result === 'wrong_int';
-            const showSol = showSolution[q.id];
+            const isWrong   = det.result === 'wrong';
 
             return (
               <div key={q.id} className="fade-in" style={{
-                background: 'var(--bg2)', border: `1px solid ${isCorrect ? 'var(--green)' : isWrong ? 'var(--red)' : 'var(--border)'}`,
+                background: 'var(--bg2)',
+                border: `1px solid ${isCorrect ? 'var(--green)' : isWrong ? 'var(--red)' : 'var(--border)'}`,
                 borderRadius: 12, marginBottom: 12, overflow: 'hidden'
               }}>
                 <div style={{ padding: '14px 18px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                  {/* Row: status icon + Q number + score badge + meta */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
                     <div style={{
                       width: 28, height: 28, borderRadius: '50%',
                       background: isCorrect ? 'var(--green)' : isWrong ? 'var(--red)' : 'var(--grey)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '0.8rem', fontWeight: 700, color: '#fff', flexShrink: 0
                     }}>{isCorrect ? '✓' : isWrong ? '✗' : '−'}</div>
-                    <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Q{q.id}.</div>
-                    {!isPractice && (
-                      <div style={{
-                        fontSize: '0.68rem', padding: '2px 8px', borderRadius: 12,
-                        background: isCorrect ? '#22c55e22' : isWrong ? '#ef444422' : '#64748b22',
-                        color: isCorrect ? 'var(--green)' : isWrong ? 'var(--red)' : 'var(--text3)'
-                      }}>{isCorrect ? '+4' : isWrong ? '−1' : '0'}</div>
-                    )}
+                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>Q{q.id}</div>
+                    <div style={{
+                      fontSize: '0.7rem', padding: '2px 8px', borderRadius: 12,
+                      background: isCorrect ? '#22c55e22' : isWrong ? '#ef444422' : '#64748b22',
+                      color: isCorrect ? 'var(--green)' : isWrong ? 'var(--red)' : 'var(--text3)'
+                    }}>{isCorrect ? '+4' : isWrong ? '−1' : '0'}</div>
                     <div style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--text3)' }}>
                       {q.type === 'integer' ? 'Integer' : 'MCQ'} · {q.section}
                     </div>
                   </div>
 
-                  {/* Question image */}
-                  <div style={{ marginBottom: 16 }}>
-                    <QImage src={q.q} alt={`Question ${q.id}`} style={{ maxWidth: 300 }} />
+                  {/* Question image (small, zoomable) */}
+                  <div style={{ marginBottom: 14 }}>
+                    <QuestionImage src={questionImageSrc(q)} alt={`Q${q.id}`} />
                   </div>
 
-                  {/* Answer display */}
+                  {/* Answer summary */}
                   {q.type === 'mcq' ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      {q.options.map((opt, oi) => {
-                        const optNum = oi + 1;
-                        const isUserAns = det.ans === optNum;
-                        const isCorrectAns = q.correctAnswer === optNum;
-                        let bg = 'var(--bg3)', border = 'var(--border)', color = 'var(--text2)';
-                        if (isCorrectAns) { bg = '#22c55e22'; border = 'var(--green)'; color = 'var(--green)'; }
-                        else if (isUserAns && !isCorrectAns) { bg = '#ef444422'; border = 'var(--red)'; color = 'var(--red)'; }
-                        return (
-                          <div key={oi} style={{
-                            background: bg, border: `1px solid ${border}`, borderRadius: 8,
-                            padding: '8px 14px', fontSize: '0.83rem', color, display: 'flex', gap: 8
-                          }}>
-                            <span style={{ fontWeight: 700 }}>{['A', 'B', 'C', 'D'][oi]}.</span>
-                            <span>{opt}</span>
-                            {isCorrectAns && <span style={{ marginLeft: 'auto' }}>✓ Correct</span>}
-                            {isUserAns && !isCorrectAns && <span style={{ marginLeft: 'auto' }}>✗ Your answer</span>}
-                          </div>
-                        );
-                      })}
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                      {/* Correct answer bubble */}
+                      <div style={{
+                        display: 'flex', alignItems: 'center', gap: 8,
+                        background: '#22c55e22', border: '1px solid var(--green)',
+                        borderRadius: 8, padding: '8px 14px'
+                      }}>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>Correct:</span>
+                        <div style={{
+                          width: 30, height: 30, borderRadius: 8,
+                          background: 'var(--green)', color: '#fff',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontWeight: 800, fontSize: '0.95rem'
+                        }}>{OPTION_LABELS[(q.correctAnswer - 1)]}</div>
+                      </div>
+                      {/* User answer bubble (only if answered) */}
+                      {det.ans !== null && (
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          background: isCorrect ? '#22c55e22' : '#ef444422',
+                          border: `1px solid ${isCorrect ? 'var(--green)' : 'var(--red)'}`,
+                          borderRadius: 8, padding: '8px 14px'
+                        }}>
+                          <span style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>Your answer:</span>
+                          <div style={{
+                            width: 30, height: 30, borderRadius: 8,
+                            background: isCorrect ? 'var(--green)' : 'var(--red)', color: '#fff',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontWeight: 800, fontSize: '0.95rem'
+                          }}>{OPTION_LABELS[(det.ans - 1)]}</div>
+                        </div>
+                      )}
+                      {det.ans === null && (
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          background: '#64748b22', border: '1px solid var(--border2)',
+                          borderRadius: 8, padding: '8px 14px',
+                          fontSize: '0.82rem', color: 'var(--text3)'
+                        }}>Not attempted</div>
+                      )}
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem' }}>
+                    /* Integer type answer display */
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', fontSize: '0.85rem' }}>
                       <div style={{
-                        background: '#22c55e22', border: '1px solid var(--green)', borderRadius: 8,
-                        padding: '6px 14px', color: 'var(--green)'
+                        background: '#22c55e22', border: '1px solid var(--green)',
+                        borderRadius: 8, padding: '6px 14px', color: 'var(--green)'
                       }}>Correct: <strong>{q.correctAnswer}</strong></div>
                       {det.ans !== null && (
                         <div style={{
@@ -1145,29 +950,15 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
                           color: isCorrect ? 'var(--green)' : 'var(--red)'
                         }}>Your answer: <strong>{det.ans}</strong></div>
                       )}
+                      {det.ans === null && (
+                        <div style={{
+                          background: '#64748b22', border: '1px solid var(--border2)',
+                          borderRadius: 8, padding: '6px 14px', color: 'var(--text3)'
+                        }}>Not attempted</div>
+                      )}
                     </div>
                   )}
-
-                  {/* Solution toggle */}
-                  <button onClick={() => setShowSolution(prev => ({ ...prev, [q.id]: !prev[q.id] }))} style={{
-                    marginTop: 12, background: 'var(--bg3)', border: '1px solid var(--border2)',
-                    borderRadius: 8, padding: '6px 14px', color: 'var(--text2)', fontSize: '0.8rem', fontWeight: 600
-                  }}>
-                    {showSol ? '▲ Hide Solution' : '▼ View Solution'}
-                  </button>
                 </div>
-
-                {showSol && (
-                  <div style={{
-                    background: 'var(--bg3)', borderTop: '1px solid var(--border)',
-                    padding: '16px 18px'
-                  }}>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent2)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Solution
-                    </div>
-                    <QImage src={q.solution} alt={`Solution ${q.id}`} />
-                  </div>
-                )}
               </div>
             );
           })}
@@ -1178,15 +969,243 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  SCREEN: PRACTICE MODE
+// ═══════════════════════════════════════════════════════════════
+function PracticeScreen({ test, dark, setDark, onBack }) {
+  const qs = test.questions;
+  const [currentIdx, setCurrentIdx]     = useState(0);
+  const [attempted, setAttempted]       = useState(() => new Set());
+  const [showSolution, setShowSolution] = useState(false);
+  const [selectedOpt, setSelectedOpt]   = useState(null);
+  const [intInput, setIntInput]         = useState('');
+
+  const currentQ = qs[currentIdx];
+
+  const goTo = (idx) => {
+    setCurrentIdx(idx);
+    setShowSolution(false);
+    setSelectedOpt(null);
+    setIntInput('');
+  };
+
+  const handleShowAnswer = () => {
+    setAttempted(prev => new Set([...prev, currentIdx]));
+    setShowSolution(true);
+  };
+
+  const questionImageSrc = (q) => q.questionImage || `/q/q${q.id}.jpg`;
+  const solutionImageSrc = (q) => q.solutionImage || `/a/a${q.id}.jpg`;
+
+  const pct = Math.round((attempted.size / qs.length) * 100);
+
+  const sections = ['Physics', 'Chemistry', 'Mathematics'];
+  const sectionStart = (sec) => qs.findIndex(q => q.section === sec);
+  const sectionQs    = (sec) => qs.filter(q => q.section === sec);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+      {/* Header */}
+      <div style={{
+        background: 'var(--bg2)', borderBottom: '1px solid var(--border)',
+        padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        height: 56, flexShrink: 0
+      }}>
+        <button onClick={onBack} style={{
+          background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 8,
+          padding: '7px 14px', color: 'var(--text2)', fontSize: '0.85rem'
+        }}>← Back</button>
+        <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{test.name} — Practice</div>
+        <button onClick={() => setDark(!dark)} style={{
+          background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 8,
+          padding: '7px 12px', color: 'var(--text2)', fontSize: '0.8rem'
+        }}>{dark ? '☀️' : '🌙'}</button>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ height: 4, background: 'var(--bg3)', flexShrink: 0 }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: 'var(--accent)', transition: 'width 0.3s' }} />
+      </div>
+
+      {/* Main layout */}
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        {/* Question area */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+          <div key={currentIdx} className="fade-in">
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+              <div style={{
+                background: currentQ.section === 'Physics' ? '#06b6d422' : currentQ.section === 'Chemistry' ? '#10b98122' : '#f59e0b22',
+                border: `1px solid ${currentQ.section === 'Physics' ? '#06b6d444' : currentQ.section === 'Chemistry' ? '#10b98144' : '#f59e0b44'}`,
+                borderRadius: 6, padding: '3px 10px', fontSize: '0.72rem', fontWeight: 600,
+                color: currentQ.section === 'Physics' ? 'var(--phys)' : currentQ.section === 'Chemistry' ? 'var(--chem)' : 'var(--math)'
+              }}>{currentQ.section}</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text3)', background: 'var(--bg3)', borderRadius: 6, padding: '3px 8px' }}>
+                {currentQ.type === 'integer' ? 'Integer Type' : 'Single Correct'}
+              </div>
+              <div style={{ marginLeft: 'auto', fontSize: '0.8rem', color: 'var(--text2)' }}>
+                Q <span style={{ fontWeight: 700 }}>{currentIdx + 1}</span> / {qs.length}
+              </div>
+            </div>
+
+            {/* Question image */}
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: '16px 20px', marginBottom: 20 }}>
+              <div style={{ color: 'var(--text3)', fontSize: '0.7rem', marginBottom: 10, fontWeight: 600 }}>
+                Q{currentQ.id} &nbsp;·&nbsp; Click image to zoom
+              </div>
+              <QuestionImage src={questionImageSrc(currentQ)} alt={`Question ${currentQ.id}`} />
+            </div>
+
+            {/* MCQ option buttons */}
+            {currentQ.type === 'mcq' && !showSolution && (
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
+                {OPTION_LABELS.map((label, oi) => {
+                  const optNum     = oi + 1;
+                  const isSelected = selectedOpt === optNum;
+                  return (
+                    <button key={oi} onClick={() => setSelectedOpt(optNum)} style={{
+                      width: 56, height: 56, borderRadius: 12,
+                      background: isSelected ? 'var(--accent)' : 'var(--bg2)',
+                      border: `2px solid ${isSelected ? 'var(--accent)' : 'var(--border2)'}`,
+                      color: isSelected ? '#fff' : 'var(--text2)',
+                      fontSize: '1.1rem', fontWeight: 800,
+                      boxShadow: isSelected ? '0 4px 16px rgba(59,130,246,0.35)' : 'none',
+                      transform: isSelected ? 'scale(1.08)' : 'scale(1)',
+                    }}>{label}</button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Integer input */}
+            {currentQ.type === 'integer' && !showSolution && (
+              <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 20 }}>
+                <div style={{ color: 'var(--text2)', fontSize: '0.88rem', marginBottom: 12 }}>Your answer (integer):</div>
+                <input
+                  type="number" value={intInput} onChange={e => setIntInput(e.target.value)}
+                  placeholder="Type answer..."
+                  style={{
+                    background: 'var(--bg3)', border: '1px solid var(--border2)', borderRadius: 8,
+                    padding: '12px 20px', color: 'var(--text)', fontSize: '1.4rem', width: 180, textAlign: 'center'
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Show Answer button */}
+            {!showSolution && (
+              <button onClick={handleShowAnswer} style={{
+                padding: '12px 28px', borderRadius: 10, fontWeight: 700, fontSize: '0.95rem',
+                background: 'linear-gradient(135deg, var(--accent), var(--purple))',
+                color: '#fff', marginBottom: 20
+              }}>Show Answer & Solution →</button>
+            )}
+
+            {/* Solution panel */}
+            {showSolution && (
+              <div className="fade-in" style={{
+                background: 'var(--bg2)', border: '1px solid var(--green)',
+                borderRadius: 12, overflow: 'hidden', marginBottom: 20
+              }}>
+                {/* Answer summary */}
+                <div style={{ padding: '14px 18px', borderBottom: '1px solid var(--border)', display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--green)' }}>✓ Correct Answer</span>
+                  {currentQ.type === 'mcq' ? (
+                    <div style={{
+                      width: 34, height: 34, borderRadius: 8, background: 'var(--green)', color: '#fff',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1rem'
+                    }}>{OPTION_LABELS[currentQ.correctAnswer - 1]}</div>
+                  ) : (
+                    <div style={{
+                      background: '#22c55e22', border: '1px solid var(--green)',
+                      borderRadius: 8, padding: '6px 14px', color: 'var(--green)', fontWeight: 700
+                    }}>{currentQ.correctAnswer}</div>
+                  )}
+                </div>
+                {/* Solution image */}
+                <div style={{ padding: '16px 18px' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent2)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Solution
+                  </div>
+                  <QuestionImage src={solutionImageSrc(currentQ)} alt={`Solution ${currentQ.id}`} />
+                </div>
+              </div>
+            )}
+
+            {/* Navigation */}
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => goTo(currentIdx - 1)} disabled={currentIdx === 0} style={{
+                background: 'var(--bg3)', border: '1px solid var(--border2)', borderRadius: 8,
+                padding: '10px 18px', color: 'var(--text2)', fontWeight: 600, fontSize: '0.85rem',
+                opacity: currentIdx === 0 ? 0.5 : 1
+              }}>← Previous</button>
+              <button onClick={() => goTo(currentIdx + 1)} disabled={currentIdx === qs.length - 1} style={{
+                background: 'var(--accent)', borderRadius: 8, padding: '10px 22px',
+                color: '#fff', fontWeight: 700, fontSize: '0.85rem',
+                opacity: currentIdx === qs.length - 1 ? 0.5 : 1
+              }}>Next →</button>
+            </div>
+          </div>
+        </div>
+
+        {/* Right palette */}
+        <div style={{
+          width: 240, borderLeft: '1px solid var(--border)',
+          background: 'var(--bg2)', overflowY: 'auto', flexShrink: 0
+        }}>
+          <div style={{ padding: '16px 14px' }}>
+            <div style={{ background: 'var(--bg3)', borderRadius: 10, padding: 12, marginBottom: 16, textAlign: 'center' }}>
+              <div style={{ fontWeight: 800, fontSize: '1.4rem', color: 'var(--accent)' }}>{attempted.size}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>Attempted ({pct}%)</div>
+            </div>
+            {sections.map(sec => {
+              const start     = sectionStart(sec);
+              const secQsList = sectionQs(sec);
+              const col       = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
+              return (
+                <div key={sec} style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 700, color: col, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    {sec}
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                    {secQsList.map((q, i) => {
+                      const globalIdx  = start + i;
+                      const isAttempted = attempted.has(globalIdx);
+                      const isCurrent   = globalIdx === currentIdx;
+                      return (
+                        <div key={globalIdx}
+                          style={{
+                            width: 34, height: 34, borderRadius: '50%',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer',
+                            background: isAttempted ? 'var(--green)' : 'var(--grey)',
+                            color: '#fff',
+                            outline: isCurrent ? '3px solid var(--accent2)' : 'none',
+                            transition: 'all 0.15s', flexShrink: 0
+                          }}
+                          onClick={() => goTo(globalIdx)}
+                        >{globalIdx + 1}</div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  APP ROOT
 // ═══════════════════════════════════════════════════════════════
 export default function App() {
-  const [dark, setDark] = useState(true);
-  const [screen, setScreen] = useState('home'); // home | instructions | test | results
+  const [dark, setDark]               = useState(true);
+  const [screen, setScreen]           = useState('home');
   const [selectedTest, setSelectedTest] = useState(null);
   const [testDuration, setTestDuration] = useState(null);
-  const [testMode, setTestMode] = useState(null);
-  const [testResult, setTestResult] = useState(null);
+  const [testResult, setTestResult]   = useState(null);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -1194,26 +1213,33 @@ export default function App() {
     else root.classList.add('light');
   }, [dark]);
 
+  // Decide which mode to launch
+  const handleSelectTest = (test) => {
+    setSelectedTest(test);
+    if (test.mode === 'practice') {
+      setScreen('practice');
+    } else {
+      setScreen('instructions');
+    }
+  };
+
   return (
     <>
       <style>{globalCSS}</style>
       {screen === 'home' && (
-        <HomeScreen
-          dark={dark} setDark={setDark}
-          onSelect={test => { setSelectedTest(test); setScreen('instructions'); }}
-        />
+        <HomeScreen dark={dark} setDark={setDark} onSelect={handleSelectTest} />
       )}
       {screen === 'instructions' && selectedTest && (
         <InstructionsScreen
           test={selectedTest} dark={dark} setDark={setDark}
           onBack={() => setScreen('home')}
-          onStart={({ mode, duration }) => { setTestMode(mode); setTestDuration(duration); setScreen('test'); }}
+          onStart={dur => { setTestDuration(dur); setScreen('test'); }}
         />
       )}
       {screen === 'test' && selectedTest && (
         <TestScreen
           key={selectedTest.id + Date.now()}
-          test={selectedTest} mode={testMode} duration={testDuration}
+          test={selectedTest} duration={testDuration}
           dark={dark} setDark={setDark}
           onSubmit={result => { setTestResult(result); setScreen('results'); }}
         />
@@ -1224,6 +1250,12 @@ export default function App() {
           dark={dark} setDark={setDark}
           onHome={() => { setScreen('home'); setTestResult(null); setSelectedTest(null); }}
           onRetry={() => { setScreen('instructions'); setTestResult(null); }}
+        />
+      )}
+      {screen === 'practice' && selectedTest && (
+        <PracticeScreen
+          test={selectedTest} dark={dark} setDark={setDark}
+          onBack={() => { setScreen('home'); setSelectedTest(null); }}
         />
       )}
     </>
