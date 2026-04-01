@@ -5,14 +5,44 @@ import { tests, getTestsBySubject } from '../data/questions';
 // ── Palette state constants ───────────────────────────────────
 const S = { NOT_VISITED: 0, NOT_ANSWERED: 1, ANSWERED: 2, MARKED: 3, MARKED_ANSWERED: 4 };
 
-// ── Math renderer (KaTeX-like inline renderer using CSS) ──────
-function QText({ text }) {
-  if (!text) return null;
-  // Simple: render as pre-formatted text preserving math symbols
+// ── Image question/solution renderer ──────────────────────────
+function QImage({ src, alt, style }) {
+  const [zoomed, setZoomed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  if (!src) return null;
   return (
-    <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.8, fontSize: '1rem' }}>
-      {text.split('\n').map((line, i) => <p key={i} style={{ margin: '4px 0' }}>{line}</p>)}
-    </div>
+    <>
+      <div style={{
+        background: 'var(--bg2)', border: '1px solid var(--border)',
+        borderRadius: 12, overflow: 'hidden', cursor: 'zoom-in',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        ...style
+      }} onClick={() => setZoomed(true)}>
+        {!error ? (
+          <img src={src} alt={alt} style={{
+            maxWidth: '100%', maxHeight: 500, display: 'block',
+            opacity: loaded ? 1 : 0, transition: 'opacity 0.3s'
+          }} onLoad={() => setLoaded(true)} onError={() => setError(true)} />
+        ) : (
+          <div style={{ padding: 24, color: 'var(--text3)', textAlign: 'center', fontSize: '0.85rem' }}>
+            Image not found: {src}
+          </div>
+        )}
+      </div>
+      {zoomed && !error && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 2000, cursor: 'zoom-out'
+        }} onClick={() => setZoomed(false)}>
+          <img src={src} alt={alt} style={{
+            maxWidth: '95vw', maxHeight: '95vh', objectFit: 'contain',
+            borderRadius: 8, boxShadow: '0 0 40px rgba(0,0,0,0.5)'
+          }} />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -128,7 +158,7 @@ function HomeScreen({ dark, setDark, onSelect }) {
           Select Your Test
         </div>
         <div style={{ color: 'var(--text2)', marginTop: 12, fontSize: '1rem' }}>
-          JEE Main Practice Tests — Full Computer Based Test Experience
+          JEE Main Practice Tests — Exam & Practice Modes
         </div>
         <div style={{
           display: 'flex', gap: 24, justifyContent: 'center', marginTop: 24,
@@ -136,9 +166,9 @@ function HomeScreen({ dark, setDark, onSelect }) {
         }}>
           {[
             { label: `${tests.length} Test${tests.length !== 1 ? 's' : ''}`, icon: '📋' },
-            { label: '75 Questions each', icon: '❓' },
+            { label: 'Image Questions', icon: '🖼️' },
             { label: '+4 / −1 Marking', icon: '📊' },
-            { label: '180 Min Duration', icon: '⏱️' },
+            { label: 'Exam & Practice Modes', icon: '🎯' },
           ].map(item => (
             <div key={item.label} style={{
               background: 'var(--bg)', border: '1px solid var(--border)',
@@ -254,10 +284,11 @@ function TestCard({ test, result, color, onSelect }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SCREEN: INSTRUCTIONS
+//  SCREEN: INSTRUCTIONS (with mode selector)
 // ═══════════════════════════════════════════════════════════════
 function InstructionsScreen({ test, dark, setDark, onStart, onBack }) {
   const [duration, setDuration] = useState(Math.round(test.duration / 60));
+  const [mode, setMode] = useState(test.mode || 'exam');
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -283,82 +314,147 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack }) {
           </h1>
           <div style={{ color: 'var(--text3)', marginBottom: 32 }}>Please read carefully before starting the test</div>
 
-          {/* Timer setting */}
-          <div style={{ background: 'var(--bg2)', border: '1px solid var(--accent)44', borderRadius: 12, padding: 20, marginBottom: 24 }}>
-            <div style={{ fontWeight: 600, marginBottom: 12, color: 'var(--accent2)' }}>⏱️ Set Test Duration</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <input
-                type="number" value={duration} min={10} max={300}
-                onChange={e => setDuration(Number(e.target.value))}
-                style={{
-                  background: 'var(--bg3)', border: '1px solid var(--border2)', borderRadius: 8,
-                  padding: '10px 16px', color: 'var(--text)', fontSize: '1.2rem',
-                  width: 100, textAlign: 'center'
-                }}
-              />
-              <span style={{ color: 'var(--text2)' }}>minutes</span>
-              <span style={{ color: 'var(--text3)', fontSize: '0.85rem' }}>
-                (Default: {Math.round(test.duration / 60)} min)
-              </span>
-            </div>
-          </div>
-
-          {/* Marking scheme */}
+          {/* ── Mode Selector ───────────────────────────── */}
           <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
-            <div style={{ fontWeight: 600, marginBottom: 16 }}>📊 Marking Scheme</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-              {[
-                { label: 'Correct', value: '+4', bg: '#22c55e22', color: 'var(--green)' },
-                { label: 'Wrong', value: '−1', bg: '#ef444422', color: 'var(--red)' },
-                { label: 'Skipped', value: '0', bg: '#64748b22', color: 'var(--text3)' },
-              ].map(item => (
-                <div key={item.label} style={{
-                  background: item.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center'
-                }}>
-                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: item.color, fontFamily: 'JetBrains Mono' }}>{item.value}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text2)', marginTop: 4 }}>{item.label}</div>
+            <div style={{ fontWeight: 600, marginBottom: 16 }}>🎯 Choose Mode</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              {/* Exam Mode Card */}
+              <button onClick={() => setMode('exam')} style={{
+                background: mode === 'exam' ? '#3b82f622' : 'var(--bg3)',
+                border: `2px solid ${mode === 'exam' ? 'var(--accent)' : 'var(--border)'}`,
+                borderRadius: 12, padding: 20, textAlign: 'left',
+                transition: 'all 0.15s'
+              }}>
+                <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>{mode === 'exam' ? '🏆' : '🏛️'}</div>
+                <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 4, color: mode === 'exam' ? 'var(--accent2)' : 'var(--text)' }}>Exam Mode</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text3)', lineHeight: 1.5 }}>
+                  Full JEE simulation with countdown timer, +4/−1 marking, auto-submit
                 </div>
-              ))}
+              </button>
+              {/* Practice Mode Card */}
+              <button onClick={() => setMode('practice')} style={{
+                background: mode === 'practice' ? '#22c55e22' : 'var(--bg3)',
+                border: `2px solid ${mode === 'practice' ? 'var(--green)' : 'var(--border)'}`,
+                borderRadius: 12, padding: 20, textAlign: 'left',
+                transition: 'all 0.15s'
+              }}>
+                <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>{mode === 'practice' ? '📖' : '📝'}</div>
+                <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 4, color: mode === 'practice' ? 'var(--green)' : 'var(--text)' }}>Practice Mode</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text3)', lineHeight: 1.5 }}>
+                  No timer, progress bar, instant solutions, no negative marking
+                </div>
+              </button>
             </div>
           </div>
 
-          {/* Palette legend */}
-          <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
-            <div style={{ fontWeight: 600, marginBottom: 16 }}>🎨 Question Palette Legend</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {[
-                { state: S.NOT_VISITED, label: 'Not Visited', desc: 'You have not visited this question yet.' },
-                { state: S.NOT_ANSWERED, label: 'Not Answered', desc: 'You visited but did not answer.' },
-                { state: S.ANSWERED, label: 'Answered', desc: 'You have given an answer.' },
-                { state: S.MARKED, label: 'Marked for Review', desc: 'Marked for review without answer.' },
-                { state: S.MARKED_ANSWERED, label: 'Marked + Answered', desc: 'Answered and marked for review.' },
-              ].map(item => (
-                <div key={item.state} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <div style={bubbleStyle(item.state, false)}>9</div>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{item.label}</div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>{item.desc}</div>
+          {/* Timer setting (exam mode only) */}
+          {mode === 'exam' && (
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--accent)44', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+              <div style={{ fontWeight: 600, marginBottom: 12, color: 'var(--accent2)' }}>⏱️ Set Test Duration</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <input
+                  type="number" value={duration} min={10} max={300}
+                  onChange={e => setDuration(Number(e.target.value))}
+                  style={{
+                    background: 'var(--bg3)', border: '1px solid var(--border2)', borderRadius: 8,
+                    padding: '10px 16px', color: 'var(--text)', fontSize: '1.2rem',
+                    width: 100, textAlign: 'center'
+                  }}
+                />
+                <span style={{ color: 'var(--text2)' }}>minutes</span>
+                <span style={{ color: 'var(--text3)', fontSize: '0.85rem' }}>
+                  (Default: {Math.round(test.duration / 60)} min)
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Marking scheme (exam mode only) */}
+          {mode === 'exam' && (
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+              <div style={{ fontWeight: 600, marginBottom: 16 }}>📊 Marking Scheme</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                {[
+                  { label: 'Correct', value: '+4', bg: '#22c55e22', color: 'var(--green)' },
+                  { label: 'Wrong', value: '−1', bg: '#ef444422', color: 'var(--red)' },
+                  { label: 'Skipped', value: '0', bg: '#64748b22', color: 'var(--text3)' },
+                ].map(item => (
+                  <div key={item.label} style={{
+                    background: item.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center'
+                  }}>
+                    <div style={{ fontSize: '1.6rem', fontWeight: 800, color: item.color, fontFamily: 'JetBrains Mono' }}>{item.value}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text2)', marginTop: 4 }}>{item.label}</div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Palette legend (exam mode only) */}
+          {mode === 'exam' && (
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+              <div style={{ fontWeight: 600, marginBottom: 16 }}>🎨 Question Palette Legend</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[
+                  { state: S.NOT_VISITED, label: 'Not Visited', desc: 'You have not visited this question yet.' },
+                  { state: S.NOT_ANSWERED, label: 'Not Answered', desc: 'You visited but did not answer.' },
+                  { state: S.ANSWERED, label: 'Answered', desc: 'You have given an answer.' },
+                  { state: S.MARKED, label: 'Marked for Review', desc: 'Marked for review without answer.' },
+                  { state: S.MARKED_ANSWERED, label: 'Marked + Answered', desc: 'Answered and marked for review.' },
+                ].map(item => (
+                  <div key={item.state} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <div style={bubbleStyle(item.state, false)}>9</div>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{item.label}</div>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>{item.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Practice mode info */}
+          {mode === 'practice' && (
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--green)44', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+              <div style={{ fontWeight: 600, marginBottom: 16, color: 'var(--green)' }}>📖 Practice Mode Features</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[
+                  { icon: '📊', text: 'Progress bar tracks how many questions you\'ve attempted' },
+                  { icon: '✅', text: 'Click "Show Answer & Solution" to reveal the answer below each question' },
+                  { icon: '🔄', text: 'No negative marking — track your learning without pressure' },
+                  { icon: '🖼️', text: 'Questions and solutions are displayed as images with click-to-zoom' },
+                ].map(item => (
+                  <div key={item.icon} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <div style={{ fontSize: '1.2rem' }}>{item.icon}</div>
+                    <div style={{ fontSize: '0.88rem', color: 'var(--text2)', lineHeight: 1.5 }}>{item.text}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* General rules */}
           <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 32 }}>
             <div style={{ fontWeight: 600, marginBottom: 16 }}>📋 General Rules</div>
             {[
               `This test has ${test.totalQuestions} questions across Physics, Chemistry, and Mathematics.`,
+              'Questions are displayed as images. Click to zoom in.',
               'Each section has 20 MCQ questions (4 options, 1 correct) and 5 Integer type questions.',
-              'Integer type questions: answer is a number (0–999), no negative marking.',
-              'Use "Mark for Review & Next" to flag questions you want to revisit.',
-              'Use "Clear Response" to remove your selected answer.',
-              'The test auto-submits when the timer reaches zero.',
-              'You will receive a warning (red pulsing timer) in the last 5 minutes.',
+              'Integer type questions: answer is a number (0–999).',
+              ...(mode === 'exam' ? [
+                'Use "Mark for Review & Next" to flag questions you want to revisit.',
+                'Use "Clear Response" to remove your selected answer.',
+                'The test auto-submits when the timer reaches zero.',
+                'You will receive a warning (red pulsing timer) in the last 5 minutes.',
+              ] : [
+                'Navigate freely between questions — no time pressure.',
+                'Review solutions immediately after attempting each question.',
+              ]),
             ].map((rule, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, alignItems: 'flex-start' }}>
                 <div style={{
-                  width: 22, height: 22, borderRadius: '50%', background: 'var(--accent)',
+                  width: 22, height: 22, borderRadius: '50%', background: mode === 'exam' ? 'var(--accent)' : 'var(--green)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '0.7rem', fontWeight: 700, flexShrink: 0, marginTop: 2
                 }}>{i + 1}</div>
@@ -367,12 +463,19 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack }) {
             ))}
           </div>
 
-          <button onClick={() => onStart(duration * 60)} style={{
+          <button onClick={() => {
+            onStart({
+              mode,
+              duration: mode === 'exam' ? duration * 60 : null
+            });
+          }} style={{
             width: '100%', padding: '16px', borderRadius: 12,
-            background: 'linear-gradient(135deg, var(--accent), var(--purple))',
+            background: mode === 'exam'
+              ? 'linear-gradient(135deg, var(--accent), var(--purple))'
+              : 'linear-gradient(135deg, var(--green), #06b6d4)',
             color: '#fff', fontWeight: 700, fontSize: '1.1rem', letterSpacing: '0.01em'
           }}>
-            Start Test →
+            {mode === 'exam' ? 'Start Exam →' : 'Start Practice →'}
           </button>
         </div>
       </div>
@@ -381,9 +484,9 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SCREEN: CBT TEST
+//  SCREEN: CBT TEST (Exam Mode + Practice Mode)
 // ═══════════════════════════════════════════════════════════════
-function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
+function TestScreen({ test, mode, duration: initDuration, dark, setDark, onSubmit }) {
   const qs = test.questions;
   const sections = ['Physics', 'Chemistry', 'Mathematics'];
 
@@ -394,20 +497,24 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
   const [timeLeft, setTimeLeft] = useState(initDuration);
   const [showConfirm, setShowConfirm] = useState(false);
   const [activeSection, setActiveSection] = useState('Physics');
+  const [showSolution, setShowSolution] = useState({});
   const timerRef = useRef(null);
 
   const currentQ = qs[currentIdx];
+  const isPractice = mode === 'practice';
 
-  // Start timer
-  useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setTimeLeft(t => {
-        if (t <= 1) { clearInterval(timerRef.current); handleFinalSubmit(); return 0; }
-        return t - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timerRef.current);
-  }, []);
+  // Start timer for exam mode
+  if (!isPractice) {
+    useEffect(() => {
+      timerRef.current = setInterval(() => {
+        setTimeLeft(t => {
+          if (t <= 1) { clearInterval(timerRef.current); handleFinalSubmit(); return 0; }
+          return t - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timerRef.current);
+    }, []);
+  }
 
   // Mark as not-answered when visiting
   useEffect(() => {
@@ -424,12 +531,16 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
   const handleAnswer = (optIdx) => {
     if (currentQ.type === 'integer') return;
     setAnswers(prev => { const a = [...prev]; a[currentIdx] = optIdx; return a; });
-    setStates(prev => {
-      const s = [...prev];
-      s[currentIdx] = prev[currentIdx] === S.MARKED || prev[currentIdx] === S.MARKED_ANSWERED
-        ? S.MARKED_ANSWERED : S.ANSWERED;
-      return s;
-    });
+    if (isPractice) {
+      setStates(prev => { const s = [...prev]; s[currentIdx] = S.ANSWERED; return s; });
+    } else {
+      setStates(prev => {
+        const s = [...prev];
+        s[currentIdx] = prev[currentIdx] === S.MARKED || prev[currentIdx] === S.MARKED_ANSWERED
+          ? S.MARKED_ANSWERED : S.ANSWERED;
+        return s;
+      });
+    }
   };
 
   const handleIntInput = (val) => {
@@ -437,15 +548,19 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
     const num = Number(val);
     if (val !== '' && !isNaN(num)) {
       setAnswers(prev => { const a = [...prev]; a[currentIdx] = num; return a; });
-      setStates(prev => {
-        const s = [...prev];
-        s[currentIdx] = prev[currentIdx] === S.MARKED || prev[currentIdx] === S.MARKED_ANSWERED
-          ? S.MARKED_ANSWERED : S.ANSWERED;
-        return s;
-      });
+      if (isPractice) {
+        setStates(prev => { const s = [...prev]; s[currentIdx] = S.ANSWERED; return s; });
+      } else {
+        setStates(prev => {
+          const s = [...prev];
+          s[currentIdx] = prev[currentIdx] === S.MARKED || prev[currentIdx] === S.MARKED_ANSWERED
+            ? S.MARKED_ANSWERED : S.ANSWERED;
+          return s;
+        });
+      }
     } else {
       setAnswers(prev => { const a = [...prev]; a[currentIdx] = null; return a; });
-      if (states[currentIdx] !== S.MARKED && states[currentIdx] !== S.MARKED_ANSWERED) {
+      if (!isPractice && states[currentIdx] !== S.MARKED && states[currentIdx] !== S.MARKED_ANSWERED) {
         setStates(prev => { const s = [...prev]; s[currentIdx] = S.NOT_ANSWERED; return s; });
       }
     }
@@ -454,11 +569,15 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
   const handleClear = () => {
     setAnswers(prev => { const a = [...prev]; a[currentIdx] = null; return a; });
     setIntInputs(prev => { const a = [...prev]; a[currentIdx] = ''; return a; });
-    setStates(prev => {
-      const s = [...prev];
-      s[currentIdx] = prev[currentIdx] === S.MARKED_ANSWERED ? S.MARKED : S.NOT_ANSWERED;
-      return s;
-    });
+    if (isPractice) {
+      setStates(prev => { const s = [...prev]; s[currentIdx] = S.NOT_ANSWERED; return s; });
+    } else {
+      setStates(prev => {
+        const s = [...prev];
+        s[currentIdx] = prev[currentIdx] === S.MARKED_ANSWERED ? S.MARKED : S.NOT_ANSWERED;
+        return s;
+      });
+    }
   };
 
   const handleMarkReview = () => {
@@ -475,7 +594,7 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
   const goPrev = () => { if (currentIdx > 0) setCurrentIdx(i => i - 1); };
 
   const handleFinalSubmit = useCallback(() => {
-    clearInterval(timerRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
     // Calculate results
     let score = 0, correct = 0, wrong = 0, skipped = 0;
     const details = qs.map((q, i) => {
@@ -489,10 +608,10 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
         else { score -= 1; wrong++; return { qid: q.id, ans, correct: q.correctAnswer, result: 'wrong' }; }
       }
     });
-    const result = { score, correct, wrong, skipped, details, answers: [...answers], date: new Date().toISOString() };
+    const result = { score, correct, wrong, skipped, details, answers: [...answers], mode, date: new Date().toISOString() };
     saveResult(test.id, result);
     onSubmit(result);
-  }, [answers, qs, test.id, onSubmit]);
+  }, [answers, qs, test.id, mode, onSubmit]);
 
   const sectionQs = (sec) => qs.filter(q => q.section === sec);
   const sectionStart = (sec) => qs.findIndex(q => q.section === sec);
@@ -502,7 +621,10 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
   const notAnswered = states.filter(s => s === S.NOT_ANSWERED).length;
   const notVisited = states.filter(s => s === S.NOT_VISITED).length;
 
-  const isLastFive = timeLeft <= 300;
+  const isLastFive = !isPractice && timeLeft <= 300;
+
+  // ── Practice mode: progress ─────────────────────────
+  const progressPct = qs.length > 0 ? Math.round((answered / qs.length) * 100) : 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
@@ -514,19 +636,36 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
       }}>
         <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{test.name}</div>
 
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          background: isLastFive ? '#ef444422' : 'var(--bg3)',
-          border: `1px solid ${isLastFive ? 'var(--red)' : 'var(--border)'}`,
-          borderRadius: 8, padding: '8px 16px',
-          ...(isLastFive ? { className: 'pulse-red' } : {})
-        }} className={isLastFive ? 'pulse-red' : ''}>
-          <span style={{ fontSize: '1rem' }}>⏱️</span>
-          <span style={{
-            fontFamily: 'JetBrains Mono', fontWeight: 700, fontSize: '1.1rem',
-            color: isLastFive ? 'var(--red)' : 'var(--text)'
-          }}>{fmtTime(timeLeft)}</span>
-        </div>
+        {isPractice ? (
+          /* Practice mode: progress bar */
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, maxWidth: 400, margin: '0 20px' }}>
+            <div style={{ flex: 1, background: 'var(--bg3)', borderRadius: 8, height: 10, overflow: 'hidden' }}>
+              <div style={{
+                width: `${progressPct}%`, height: '100%',
+                background: 'linear-gradient(90deg, var(--green), var(--accent))',
+                borderRadius: 8, transition: 'width 0.3s ease'
+              }} />
+            </div>
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text2)', fontFamily: 'JetBrains Mono', minWidth: 60 }}>
+              {answered}/{qs.length}
+            </span>
+          </div>
+        ) : (
+          /* Exam mode: timer */
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: isLastFive ? '#ef444422' : 'var(--bg3)',
+            border: `1px solid ${isLastFive ? 'var(--red)' : 'var(--border)'}`,
+            borderRadius: 8, padding: '8px 16px'
+          }}>
+            <span style={{ fontSize: '1rem' }}>⏱️</span>
+            <span style={{
+              fontFamily: 'JetBrains Mono', fontWeight: 700, fontSize: '1.1rem',
+              color: isLastFive ? 'var(--red)' : 'var(--text)'
+            }}>{fmtTime(timeLeft)}</span>
+            <span className={isLastFive ? 'pulse-red' : ''} style={isLastFive ? { display: 'inline-block' } : {}} />
+          </div>
+        )}
 
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={() => setDark(!dark)} style={{
@@ -536,7 +675,7 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
           <button onClick={() => setShowConfirm(true)} style={{
             background: 'var(--red)', borderRadius: 8, padding: '7px 16px',
             color: '#fff', fontWeight: 700, fontSize: '0.85rem'
-          }}>Submit Test</button>
+          }}>{isPractice ? 'Finish' : 'Submit Test'}</button>
         </div>
       </div>
 
@@ -590,15 +729,9 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
               </div>
             </div>
 
-            {/* Question text */}
-            <div style={{
-              background: 'var(--bg2)', border: '1px solid var(--border)',
-              borderRadius: 12, padding: '20px 24px', marginBottom: 20
-            }}>
-              <div style={{ color: 'var(--text3)', fontSize: '0.75rem', marginBottom: 8, fontWeight: 600 }}>
-                Q{currentQ.id}.
-              </div>
-              <QText text={currentQ.questionText} />
+            {/* Question image */}
+            <div style={{ marginBottom: 20 }}>
+              <QImage src={currentQ.q} alt={`Question ${currentQ.id}`} />
             </div>
 
             {/* Options or Integer input */}
@@ -650,12 +783,37 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
               </div>
             )}
 
+            {/* Practice mode: Show Answer button */}
+            {isPractice && (
+              <div style={{ marginTop: 16 }}>
+                <button onClick={() => {
+                  setShowSolution(prev => ({ ...prev, [currentQ.id]: !prev[currentQ.id] }));
+                }} style={{
+                  background: 'var(--green)', borderRadius: 8, padding: '10px 20px',
+                  color: '#fff', fontWeight: 700, fontSize: '0.9rem',
+                  display: 'flex', alignItems: 'center', gap: 8
+                }}>
+                  {showSolution[currentQ.id] ? '▲ Hide Solution' : '▼ Show Answer & Solution'}
+                </button>
+                {showSolution[currentQ.id] && (
+                  <div className="slide-up" style={{ marginTop: 16 }}>
+                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--green)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Solution
+                    </div>
+                    <QImage src={currentQ.solution} alt={`Solution ${currentQ.id}`} />
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Action buttons */}
             <div style={{ display: 'flex', gap: 10, marginTop: 24, flexWrap: 'wrap' }}>
-              <button onClick={handleMarkReview} style={{
-                background: 'var(--purple)', borderRadius: 8, padding: '10px 18px',
-                color: '#fff', fontWeight: 600, fontSize: '0.85rem'
-              }}>Mark for Review & Next</button>
+              {!isPractice && (
+                <button onClick={handleMarkReview} style={{
+                  background: 'var(--purple)', borderRadius: 8, padding: '10px 18px',
+                  color: '#fff', fontWeight: 600, fontSize: '0.85rem'
+                }}>Mark for Review & Next</button>
+              )}
               <button onClick={handleClear} style={{
                 background: 'var(--bg3)', border: '1px solid var(--border2)',
                 borderRadius: 8, padding: '10px 18px', color: 'var(--text2)', fontWeight: 600, fontSize: '0.85rem'
@@ -676,56 +834,58 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
           </div>
         </div>
 
-        {/* Right palette */}
-        <div style={{
-          width: 240, borderLeft: '1px solid var(--border)',
-          background: 'var(--bg2)', overflowY: 'auto', flexShrink: 0
-        }}>
-          <div style={{ padding: '16px 14px' }}>
-            {/* Stats */}
-            <div style={{
-              background: 'var(--bg3)', borderRadius: 10, padding: 12, marginBottom: 16,
-              display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8
-            }}>
-              {[
-                { label: 'Answered', val: answered, color: 'var(--green)' },
-                { label: 'Marked', val: marked, color: 'var(--purple)' },
-                { label: 'Not Ans.', val: notAnswered, color: 'var(--red)' },
-                { label: 'Not Visit.', val: notVisited, color: 'var(--grey)' },
-              ].map(item => (
-                <div key={item.label} style={{ textAlign: 'center' }}>
-                  <div style={{ fontWeight: 800, fontSize: '1.2rem', color: item.color }}>{item.val}</div>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text3)' }}>{item.label}</div>
-                </div>
-              ))}
-            </div>
+        {/* Right palette (exam mode only) */}
+        {!isPractice && (
+          <div style={{
+            width: 240, borderLeft: '1px solid var(--border)',
+            background: 'var(--bg2)', overflowY: 'auto', flexShrink: 0
+          }}>
+            <div style={{ padding: '16px 14px' }}>
+              {/* Stats */}
+              <div style={{
+                background: 'var(--bg3)', borderRadius: 10, padding: 12, marginBottom: 16,
+                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8
+              }}>
+                {[
+                  { label: 'Answered', val: answered, color: 'var(--green)' },
+                  { label: 'Marked', val: marked, color: 'var(--purple)' },
+                  { label: 'Not Ans.', val: notAnswered, color: 'var(--red)' },
+                  { label: 'Not Visit.', val: notVisited, color: 'var(--grey)' },
+                ].map(item => (
+                  <div key={item.label} style={{ textAlign: 'center' }}>
+                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: item.color }}>{item.val}</div>
+                    <div style={{ fontSize: '0.65rem', color: 'var(--text3)' }}>{item.label}</div>
+                  </div>
+                ))}
+              </div>
 
-            {/* Section question grids */}
-            {sections.map(sec => {
-              const start = sectionStart(sec);
-              const secQsList = sectionQs(sec);
-              const col = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
-              return (
-                <div key={sec} style={{ marginBottom: 16 }}>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 700, color: col, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    {sec}
+              {/* Section question grids */}
+              {sections.map(sec => {
+                const start = sectionStart(sec);
+                const secQsList = sectionQs(sec);
+                const col = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
+                return (
+                  <div key={sec} style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: col, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                      {sec}
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                      {secQsList.map((q, i) => {
+                        const globalIdx = start + i;
+                        return (
+                          <div key={globalIdx}
+                            style={bubbleStyle(states[globalIdx], globalIdx === currentIdx)}
+                            onClick={() => { setCurrentIdx(globalIdx); setActiveSection(sec); }}
+                          >{globalIdx + 1}</div>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                    {secQsList.map((q, i) => {
-                      const globalIdx = start + i;
-                      return (
-                        <div key={globalIdx}
-                          style={bubbleStyle(states[globalIdx], globalIdx === currentIdx)}
-                          onClick={() => { setCurrentIdx(globalIdx); setActiveSection(sec); }}
-                        >{globalIdx + 1}</div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Confirm dialog */}
@@ -738,16 +898,23 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
             background: 'var(--bg2)', border: '1px solid var(--border)',
             borderRadius: 16, padding: 32, maxWidth: 440, width: '90%'
           }} onClick={e => e.stopPropagation()}>
-            <div style={{ fontWeight: 800, fontSize: '1.3rem', marginBottom: 8 }}>Submit Test?</div>
+            <div style={{ fontWeight: 800, fontSize: '1.3rem', marginBottom: 8 }}>
+              {isPractice ? 'Finish Practice?' : 'Submit Test?'}
+            </div>
             <div style={{ color: 'var(--text3)', marginBottom: 24, fontSize: '0.9rem' }}>
-              Time remaining: <strong style={{ color: 'var(--orange)' }}>{fmtTime(timeLeft)}</strong>
+              {isPractice
+                ? `You have attempted ${answered} out of ${qs.length} questions.`
+                : <>Time remaining: <strong style={{ color: 'var(--orange)' }}>{fmtTime(timeLeft)}</strong></>
+              }
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 24 }}>
               {[
                 { label: 'Answered', val: answered, color: 'var(--green)', bg: '#22c55e22' },
-                { label: 'Not Answered', val: notAnswered, color: 'var(--red)', bg: '#ef444422' },
-                { label: 'Marked', val: marked, color: 'var(--purple)', bg: '#a855f722' },
-                { label: 'Not Visited', val: notVisited, color: 'var(--grey)', bg: '#47556922' },
+                { label: 'Not Answered', val: qs.length - answered, color: 'var(--red)', bg: '#ef444422' },
+                ...(isPractice ? [] : [
+                  { label: 'Marked', val: marked, color: 'var(--purple)', bg: '#a855f722' },
+                  { label: 'Not Visited', val: notVisited, color: 'var(--grey)', bg: '#47556922' },
+                ]),
               ].map(item => (
                 <div key={item.label} style={{
                   background: item.bg, borderRadius: 10, padding: '12px', textAlign: 'center'
@@ -761,11 +928,11 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
               <button onClick={() => setShowConfirm(false)} style={{
                 flex: 1, padding: '12px', borderRadius: 10, fontWeight: 600,
                 background: 'var(--bg3)', border: '1px solid var(--border2)', color: 'var(--text2)'
-              }}>Continue Test</button>
+              }}>{isPractice ? 'Continue' : 'Continue Test'}</button>
               <button onClick={handleFinalSubmit} style={{
                 flex: 1, padding: '12px', borderRadius: 10, fontWeight: 700,
                 background: 'var(--red)', color: '#fff'
-              }}>Submit Now</button>
+              }}>{isPractice ? 'Finish' : 'Submit Now'}</button>
             </div>
           </div>
         </div>
@@ -779,10 +946,11 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
 // ═══════════════════════════════════════════════════════════════
 function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
   const qs = test.questions;
+  const isPractice = result.mode === 'practice';
   const [showSolution, setShowSolution] = useState({});
   const [filterSection, setFilterSection] = useState('All');
   const sections = ['All', 'Physics', 'Chemistry', 'Mathematics'];
-  const pct = Math.round((result.score / test.maxMarks) * 100);
+  const pct = test.maxMarks ? Math.round((result.score / test.maxMarks) * 100) : 0;
 
   const filteredQs = filterSection === 'All' ? qs : qs.filter(q => q.section === filterSection);
 
@@ -813,14 +981,29 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
           marginBottom: 32, textAlign: 'center'
         }}>
           <div style={{ fontSize: '0.85rem', color: 'var(--text3)', marginBottom: 8 }}>Your Score</div>
-          <div style={{
-            fontSize: '4rem', fontWeight: 900, letterSpacing: '-0.04em',
-            color: pct >= 60 ? 'var(--green)' : pct >= 35 ? 'var(--orange)' : 'var(--red)',
-            lineHeight: 1
-          }}>{result.score}</div>
-          <div style={{ fontSize: '1.2rem', color: 'var(--text2)', marginBottom: 24 }}>
-            out of {test.maxMarks}  ({pct}%)
-          </div>
+
+          {isPractice ? (
+            <>
+              <div style={{
+                fontSize: '4rem', fontWeight: 900, letterSpacing: '-0.04em',
+                color: 'var(--green)', lineHeight: 1
+              }}>{result.correct}</div>
+              <div style={{ fontSize: '1.2rem', color: 'var(--text2)', marginBottom: 24 }}>
+                correct out of {qs.length} attempted
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{
+                fontSize: '4rem', fontWeight: 900, letterSpacing: '-0.04em',
+                color: pct >= 60 ? 'var(--green)' : pct >= 35 ? 'var(--orange)' : 'var(--red)',
+                lineHeight: 1
+              }}>{result.score}</div>
+              <div style={{ fontSize: '1.2rem', color: 'var(--text2)', marginBottom: 24 }}>
+                out of {test.maxMarks}  ({pct}%)
+              </div>
+            </>
+          )}
 
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             {[
@@ -855,7 +1038,7 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
             const secQs = qs.filter(q => q.section === sec);
             const secDetails = result.details.filter((d, i) => qs[i].section === sec);
             const secCorrect = secDetails.filter(d => d.result === 'correct').length;
-            const secScore = secCorrect * 4 - secDetails.filter(d => d.result === 'wrong').length;
+            const secScore = isPractice ? secCorrect : secCorrect * 4 - secDetails.filter(d => d.result === 'wrong').length;
             const col = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
             return (
               <div key={sec} style={{
@@ -863,8 +1046,8 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
                 borderRadius: 12, padding: 16, textAlign: 'center'
               }}>
                 <div style={{ fontSize: '0.75rem', fontWeight: 700, color: col, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{sec}</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>{secScore}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{secCorrect}/{secQs.length} correct</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>{isPractice ? `${secCorrect}/${secQs.length}` : secScore}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{secCorrect} correct</div>
               </div>
             );
           })}
@@ -908,18 +1091,21 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
                       fontSize: '0.8rem', fontWeight: 700, color: '#fff', flexShrink: 0
                     }}>{isCorrect ? '✓' : isWrong ? '✗' : '−'}</div>
                     <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Q{q.id}.</div>
-                    <div style={{
-                      fontSize: '0.68rem', padding: '2px 8px', borderRadius: 12,
-                      background: isCorrect ? '#22c55e22' : isWrong ? '#ef444422' : '#64748b22',
-                      color: isCorrect ? 'var(--green)' : isWrong ? 'var(--red)' : 'var(--text3)'
-                    }}>{isCorrect ? '+4' : isWrong ? '−1' : '0'}</div>
+                    {!isPractice && (
+                      <div style={{
+                        fontSize: '0.68rem', padding: '2px 8px', borderRadius: 12,
+                        background: isCorrect ? '#22c55e22' : isWrong ? '#ef444422' : '#64748b22',
+                        color: isCorrect ? 'var(--green)' : isWrong ? 'var(--red)' : 'var(--text3)'
+                      }}>{isCorrect ? '+4' : isWrong ? '−1' : '0'}</div>
+                    )}
                     <div style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--text3)' }}>
                       {q.type === 'integer' ? 'Integer' : 'MCQ'} · {q.section}
                     </div>
                   </div>
 
-                  <div style={{ fontSize: '0.88rem', color: 'var(--text2)', marginBottom: 12, lineHeight: 1.5 }}>
-                    {q.questionText.length > 120 ? q.questionText.slice(0, 120) + '…' : q.questionText}
+                  {/* Question image */}
+                  <div style={{ marginBottom: 16 }}>
+                    <QImage src={q.q} alt={`Question ${q.id}`} style={{ maxWidth: 300 }} />
                   </div>
 
                   {/* Answer display */}
@@ -979,7 +1165,7 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
                     <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent2)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       Solution
                     </div>
-                    <QText text={q.solution} />
+                    <QImage src={q.solution} alt={`Solution ${q.id}`} />
                   </div>
                 )}
               </div>
@@ -994,21 +1180,12 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
 // ═══════════════════════════════════════════════════════════════
 //  APP ROOT
 // ═══════════════════════════════════════════════════════════════
-function getTestsBySubject2() {
-  const grouped = {};
-  tests.forEach(test => {
-    const key = test.subject;
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(test);
-  });
-  return grouped;
-}
-
 export default function App() {
   const [dark, setDark] = useState(true);
   const [screen, setScreen] = useState('home'); // home | instructions | test | results
   const [selectedTest, setSelectedTest] = useState(null);
   const [testDuration, setTestDuration] = useState(null);
+  const [testMode, setTestMode] = useState(null);
   const [testResult, setTestResult] = useState(null);
 
   useEffect(() => {
@@ -1030,13 +1207,13 @@ export default function App() {
         <InstructionsScreen
           test={selectedTest} dark={dark} setDark={setDark}
           onBack={() => setScreen('home')}
-          onStart={dur => { setTestDuration(dur); setScreen('test'); }}
+          onStart={({ mode, duration }) => { setTestMode(mode); setTestDuration(duration); setScreen('test'); }}
         />
       )}
       {screen === 'test' && selectedTest && (
         <TestScreen
           key={selectedTest.id + Date.now()}
-          test={selectedTest} duration={testDuration}
+          test={selectedTest} mode={testMode} duration={testDuration}
           dark={dark} setDark={setDark}
           onSubmit={result => { setTestResult(result); setScreen('results'); }}
         />
