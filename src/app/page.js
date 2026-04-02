@@ -601,21 +601,52 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
 
             {/* ── MCQ: A / B / C / D buttons only (no text) ── */}
             {currentQ.type === 'mcq' && (
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                  marginBottom: 20,
+                  padding: '0 16px', // side padding so it doesn't stretch ugly
+                  width: '100%',
+                }}
+              >
                 {OPTION_LABELS.map((label, oi) => {
                   const optNum = oi + 1;
                   const isSelected = answers[currentIdx] === optNum;
+
                   return (
-                    <button key={oi} onClick={() => handleAnswer(optNum)} style={{
-                      width: 56, height: 56, borderRadius: 12,
-                      background: isSelected ? 'var(--accent)' : 'var(--bg2)',
-                      border: `2px solid ${isSelected ? 'var(--accent)' : 'var(--border2)'}`,
-                      color: isSelected ? '#fff' : 'var(--text2)',
-                      fontSize: '1.1rem', fontWeight: 800,
-                      boxShadow: isSelected ? '0 4px 16px rgba(59,130,246,0.35)' : 'none',
-                      transform: isSelected ? 'scale(1.08)' : 'scale(1)',
-                      transition: 'all 0.15s',
-                    }}>{label}</button>
+                    <button
+                      key={oi}
+                      onClick={() => handleAnswer(optNum)}
+                      style={{
+                        width: '100%', // full width
+                        minHeight: 56,
+                        borderRadius: 12,
+
+                        background: isSelected ? 'var(--accent)' : 'var(--bg2)',
+                        border: `2px solid ${isSelected ? 'var(--accent)' : 'var(--border2)'
+                          }`,
+                        color: isSelected ? '#fff' : 'var(--text2)',
+
+                        fontSize: '1rem',
+                        fontWeight: 700,
+
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        padding: '14px 16px',
+
+                        boxShadow: isSelected
+                          ? '0 4px 16px rgba(59,130,246,0.35)'
+                          : 'none',
+
+                        transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      {label}
+                    </button>
                   );
                 })}
               </div>
@@ -1077,6 +1108,7 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
             </div>
 
             {/* MCQ option buttons */}
+            {/* 
             {currentQ.type === 'mcq' && !showSolution && (
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
                 {OPTION_LABELS.map((label, oi) => {
@@ -1096,8 +1128,10 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
                 })}
               </div>
             )}
+              */}
 
             {/* Integer input */}
+            {/*
             {currentQ.type === 'integer' && !showSolution && (
               <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 20 }}>
                 <div style={{ color: 'var(--text2)', fontSize: '0.88rem', marginBottom: 12 }}>Your answer (integer):</div>
@@ -1111,6 +1145,8 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
                 />
               </div>
             )}
+              */}
+
 
             {/* Show Answer button */}
             {!showSolution && (
