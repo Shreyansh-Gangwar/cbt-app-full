@@ -30,7 +30,7 @@ export const tests = [
     id: "pt01",
     name: "Practice Test 01",
     mode: "exam",                  // "exam" → timer + full CBT mode
-    subject: "Physics",
+    subject: "Part Test",
     subjects: ["Physics", "Chemistry", "Mathematics"],
     chapter: "Electric Charges & Fields | Solutions | Determinants",
     duration: 10800,               // seconds (180 min)
@@ -457,11 +457,11 @@ export const tests = [
   // ───────────────────────────────────────────────────────────
   {
     id: "pr_electrostatics",
-    name: "Electrostatics Practice",
+    name: "Electrostatics SBT",
     mode: "practice",
     subject: "Physics",
     subjects: ["Physics"],
-    chapter: "Electrostatics — Selected Questions",
+    chapter: "Electrostatics — SBT Selected Questions",
     duration: 10800,
     date: "11/05/2025",
     maxMarks: 0,
