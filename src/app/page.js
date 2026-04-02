@@ -274,7 +274,7 @@ function TestCard({ test, result, color, onSelect }) {
 // ═══════════════════════════════════════════════════════════════
 //  SCREEN: INSTRUCTIONS
 // ═══════════════════════════════════════════════════════════════
-function InstructionsScreen({ test, dark, setDark, onStart, onBack }) {
+function InstructionsScreen({ test, dark, setDark, onStart, onBack, onSwitchToPractice }) {
   const [duration, setDuration] = useState(Math.round(test.duration / 60));
 
   return (
@@ -292,7 +292,19 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack }) {
       <div style={{ flex: 1, overflowY: 'auto', padding: '32px 24px', maxWidth: 800, margin: '0 auto', width: '100%' }}>
         <div className="slide-up">
           <h1 style={{ fontWeight: 800, fontSize: '1.8rem', letterSpacing: '-0.03em', marginBottom: 6 }}>General Instructions</h1>
-          <div style={{ color: 'var(--text3)', marginBottom: 32 }}>Please read carefully before starting the test</div>
+          <div style={{ color: 'var(--text3)', marginBottom: 24 }}>Please read carefully before starting the test</div>
+
+          {/* Mode toggle */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 32 }}>
+            {['exam', 'practice'].map(m => (
+              <button key={m} onClick={() => m === 'practice' && onSwitchToPractice()} style={{
+                flex: 1, padding: '10px 0', borderRadius: 8, fontSize: '0.88rem', fontWeight: 600,
+                background: m === 'exam' ? 'var(--accent)' : 'var(--bg3)',
+                color: m === 'exam' ? '#fff' : 'var(--text2)',
+                border: `1px solid ${m === 'exam' ? 'var(--accent)' : 'var(--border)'}`,
+              }}>{m === 'exam' ? '🖥️ Exam Mode' : '📖 Practice Mode'}</button>
+            ))}
+          </div>
 
           <div style={{ background: 'var(--bg2)', border: '1px solid var(--accent)44', borderRadius: 12, padding: 20, marginBottom: 24 }}>
             <div style={{ fontWeight: 600, marginBottom: 12, color: 'var(--accent2)' }}>⏱️ Set Test Duration</div>
@@ -1010,7 +1022,7 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
 
   const pct = Math.round((attempted.size / qs.length) * 100);
 
-  const sections = ['Physics', 'Chemistry', 'Mathematics'];
+  const sections = test.subjects || ['Physics', 'Chemistry', 'Mathematics'];
   const sectionStart = (sec) => qs.findIndex(q => q.section === sec);
   const sectionQs    = (sec) => qs.filter(q => q.section === sec);
 
@@ -1246,6 +1258,7 @@ export default function App() {
           test={selectedTest} dark={dark} setDark={setDark}
           onBack={() => setScreen('home')}
           onStart={dur => { setTestDuration(dur); setScreen('test'); }}
+          onSwitchToPractice={() => setScreen('practice')}
         />
       )}
       {screen === 'test' && selectedTest && (
