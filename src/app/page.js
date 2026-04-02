@@ -949,8 +949,8 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
                     <div
                       style={{
                         display: 'flex',
-                        flexDirection: 'column', // stack instead of fighting for space
-                        gap: 10,
+                        flexDirection: 'column',
+                        gap: 12,
                         width: '100%',
                         padding: '0 16px',
                       }}
@@ -964,16 +964,18 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
                           background: '#22c55e22',
                           border: '1px solid var(--green)',
                           borderRadius: 10,
-                          padding: '10px 14px',
+                          padding: '12px 16px',
                           width: '100%',
-                          flexWrap: 'wrap', // allows text to drop if needed
+                          flexWrap: 'wrap',
                         }}
                       >
                         <span
                           style={{
-                            fontSize: '0.8rem',
+                            fontSize: '0.82rem',
                             color: 'var(--text3)',
                             whiteSpace: 'nowrap',
+                            paddingRight: 6,
+                            lineHeight: 1.4,
                           }}
                         >
                           Correct:
@@ -991,7 +993,7 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
                             justifyContent: 'center',
                             fontWeight: 800,
                             fontSize: '0.95rem',
-                            flexShrink: 0, // prevents squishing
+                            flexShrink: 0,
                           }}
                         >
                           {OPTION_LABELS[q.correctAnswer - 1]}
@@ -1009,16 +1011,18 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
                             border: `1px solid ${isCorrect ? 'var(--green)' : 'var(--red)'
                               }`,
                             borderRadius: 10,
-                            padding: '10px 14px',
+                            padding: '12px 16px',
                             width: '100%',
                             flexWrap: 'wrap',
                           }}
                         >
                           <span
                             style={{
-                              fontSize: '0.8rem',
+                              fontSize: '0.82rem',
                               color: 'var(--text3)',
                               whiteSpace: 'nowrap',
+                              paddingRight: 6,
+                              lineHeight: 1.4,
                             }}
                           >
                             Your answer:
@@ -1048,10 +1052,11 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
                             background: '#64748b22',
                             border: '1px solid var(--border2)',
                             borderRadius: 10,
-                            padding: '10px 14px',
-                            fontSize: '0.82rem',
+                            padding: '12px 16px',
+                            fontSize: '0.85rem',
                             color: 'var(--text3)',
                             width: '100%',
+                            lineHeight: 1.4,
                           }}
                         >
                           Not attempted
@@ -1230,31 +1235,58 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
 
             {/* Solution panel */}
             {showSolution && (
-              <div className="fade-in" style={{
-                background: 'var(--bg2)', border: '1px solid var(--green)',
-                borderRadius: 12, overflow: 'hidden', marginBottom: 20
-              }}>
-                {/* Answer summary */}
-                <div style={{ padding: '14px 18px', borderBottom: '1px solid var(--border)', display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--green)' }}>✓ Correct Answer</span>
-                  {currentQ.type === 'mcq' ? (
-                    <div style={{
-                      width: 34, height: 34, borderRadius: 8, background: 'var(--green)', color: '#fff',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1rem'
-                    }}>{OPTION_LABELS[currentQ.correctAnswer - 1]}</div>
-                  ) : (
-                    <div style={{
-                      background: '#22c55e22', border: '1px solid var(--green)',
-                      borderRadius: 8, padding: '6px 14px', color: 'var(--green)', fontWeight: 700
-                    }}>{currentQ.correctAnswer}</div>
-                  )}
-                </div>
-                {/* Solution image */}
-                <div style={{ padding: '16px 18px' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent2)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Solution
+              <div
+                className="fade-in"
+                style={{
+                  background: 'var(--bg2)',
+                  border: '1px solid var(--green)',
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                  marginBottom: 20,
+                }}
+              >
+                {/* Header */}
+                <div
+                  style={{
+                    padding: '14px 18px',
+                    borderBottom: '1px solid var(--border)',
+                    display: 'flex',
+                    gap: 10,
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontWeight: 700,
+                      fontSize: '0.9rem',
+                      color: 'var(--green)',
+                    }}
+                  >
+                    ✓ Solution
+                  </span>
+
+                  {/* Answer box (uniform) */}
+                  <div
+                    style={{
+                      background: '#22c55e22',
+                      border: '1px solid var(--green)',
+                      borderRadius: 8,
+                      padding: '6px 14px',
+                      color: 'var(--green)',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {currentQ.correctAnswer}
                   </div>
-                  <QuestionImage src={solutionImageSrc(currentQ)} alt={`Solution ${currentQ.id}`} />
+                </div>
+
+                {/* Solution content */}
+                <div style={{ padding: '16px 18px' }}>
+                  <QuestionImage
+                    src={solutionImageSrc(currentQ)}
+                    alt={`Solution ${currentQ.id}`}
+                  />
                 </div>
               </div>
             )}
