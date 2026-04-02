@@ -30,7 +30,7 @@ export const tests = [
     id: "pt01",
     name: "Practice Test 01",
     mode: "exam",                  // "exam" → timer + full CBT mode
-    subject: "Physics",
+    subject: "Part Test",
     subjects: ["Physics", "Chemistry", "Mathematics"],
     chapter: "Electric Charges & Fields | Solutions | Determinants",
     duration: 10800,               // seconds (180 min)

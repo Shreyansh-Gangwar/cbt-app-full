@@ -7,7 +7,7 @@ const S = { NOT_VISITED: 0, NOT_ANSWERED: 1, ANSWERED: 2, MARKED: 3, MARKED_ANSW
 
 // ── Storage helpers ───────────────────────────────────────────
 function saveResult(testId, result) {
-  try { localStorage.setItem(`jee_result_${testId}`, JSON.stringify(result)); } catch {}
+  try { localStorage.setItem(`jee_result_${testId}`, JSON.stringify(result)); } catch { }
 }
 function loadResult(testId) {
   try { const r = localStorage.getItem(`jee_result_${testId}`); return r ? JSON.parse(r) : null; } catch { return null; }
@@ -66,11 +66,11 @@ function bubbleStyle(state, selected) {
   };
   if (selected) base.outline = '3px solid var(--accent2)';
   switch (state) {
-    case S.NOT_VISITED:    return { ...base, background: 'var(--grey)',   color: '#fff' };
-    case S.NOT_ANSWERED:   return { ...base, background: 'var(--red)',    color: '#fff' };
-    case S.ANSWERED:       return { ...base, background: 'var(--green)',  color: '#fff' };
-    case S.MARKED:         return { ...base, background: 'var(--purple)', color: '#fff' };
-    case S.MARKED_ANSWERED:return { ...base, background: 'var(--purple)', color: '#fff', border: '2px solid var(--green)' };
+    case S.NOT_VISITED: return { ...base, background: 'var(--grey)', color: '#fff' };
+    case S.NOT_ANSWERED: return { ...base, background: 'var(--red)', color: '#fff' };
+    case S.ANSWERED: return { ...base, background: 'var(--green)', color: '#fff' };
+    case S.MARKED: return { ...base, background: 'var(--purple)', color: '#fff' };
+    case S.MARKED_ANSWERED: return { ...base, background: 'var(--purple)', color: '#fff', border: '2px solid var(--green)' };
     default: return base;
   }
 }
@@ -78,8 +78,8 @@ function bubbleStyle(state, selected) {
 // ── Format time ───────────────────────────────────────────────
 function fmtTime(s) {
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
-  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+  return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
 }
 
 // ── Zoom-able question image ──────────────────────────────────
@@ -104,7 +104,7 @@ function QuestionImage({ src, alt }) {
 }
 
 // ── Option button labels ──────────────────────────────────────
-const OPTION_LABELS = ['A', 'B', 'C', 'D'];
+const OPTION_LABELS = ['Option A', 'Option B', 'Option C', 'Option D'];
 
 // ═══════════════════════════════════════════════════════════════
 //  SCREEN: HOME / TEST SELECTION
@@ -112,7 +112,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 function HomeScreen({ dark, setDark, onSelect }) {
   const grouped = getTestsBySubject();
   const subjectColors = { Physics: '--phys', Chemistry: '--chem', Mathematics: '--math' };
-  const subjectIcons  = { Physics: '⚡', Chemistry: '⚗️', Mathematics: '∑' };
+  const subjectIcons = { Physics: '⚡', Chemistry: '⚗️', Mathematics: '∑' };
 
   return (
     <div style={{ minHeight: '100vh', padding: '0 0 60px' }}>
@@ -204,11 +204,8 @@ function HomeScreen({ dark, setDark, onSelect }) {
           border: '2px dashed var(--border2)', borderRadius: 12, padding: 24,
           textAlign: 'center', color: 'var(--text3)'
         }}>
-          <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>➕</div>
-          <div style={{ fontWeight: 600, marginBottom: 4 }}>Add More Tests</div>
-          <div style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>
-            Share new PDFs and receive an updated <code style={{ background: 'var(--bg3)', padding: '2px 6px', borderRadius: 4, fontSize: '0.8rem' }}>src/data/questions.js</code> file to drop into this project.
-          </div>
+          <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>🫶🏼</div>
+          <div style={{ fontWeight: 600, marginBottom: 4 }}>made with love</div>
         </div>
       </div>
     </div>
@@ -327,8 +324,8 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack, onSwitchToPr
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
               {[
                 { label: 'Correct', value: '+4', bg: '#22c55e22', color: 'var(--green)' },
-                { label: 'Wrong',   value: '−1', bg: '#ef444422', color: 'var(--red)' },
-                { label: 'Skipped', value: '0',  bg: '#64748b22', color: 'var(--text3)' },
+                { label: 'Wrong', value: '−1', bg: '#ef444422', color: 'var(--red)' },
+                { label: 'Skipped', value: '0', bg: '#64748b22', color: 'var(--text3)' },
               ].map(item => (
                 <div key={item.label} style={{ background: item.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
                   <div style={{ fontSize: '1.6rem', fontWeight: 800, color: item.color, fontFamily: 'JetBrains Mono' }}>{item.value}</div>
@@ -342,11 +339,11 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack, onSwitchToPr
             <div style={{ fontWeight: 600, marginBottom: 16 }}>🎨 Question Palette Legend</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
-                { state: S.NOT_VISITED,     label: 'Not Visited',         desc: 'You have not visited this question yet.' },
-                { state: S.NOT_ANSWERED,    label: 'Not Answered',        desc: 'You visited but did not answer.' },
-                { state: S.ANSWERED,        label: 'Answered',            desc: 'You have given an answer.' },
-                { state: S.MARKED,          label: 'Marked for Review',   desc: 'Marked for review without answer.' },
-                { state: S.MARKED_ANSWERED, label: 'Marked + Answered',   desc: 'Answered and marked for review.' },
+                { state: S.NOT_VISITED, label: 'Not Visited', desc: 'You have not visited this question yet.' },
+                { state: S.NOT_ANSWERED, label: 'Not Answered', desc: 'You visited but did not answer.' },
+                { state: S.ANSWERED, label: 'Answered', desc: 'You have given an answer.' },
+                { state: S.MARKED, label: 'Marked for Review', desc: 'Marked for review without answer.' },
+                { state: S.MARKED_ANSWERED, label: 'Marked + Answered', desc: 'Answered and marked for review.' },
               ].map(item => (
                 <div key={item.state} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                   <div style={bubbleStyle(item.state, false)}>9</div>
@@ -399,11 +396,11 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
   const qs = test.questions;
   const sections = ['Physics', 'Chemistry', 'Mathematics'];
 
-  const [currentIdx, setCurrentIdx]   = useState(0);
-  const [answers, setAnswers]         = useState(() => new Array(qs.length).fill(null));
-  const [states, setStates]           = useState(() => new Array(qs.length).fill(S.NOT_VISITED));
-  const [intInputs, setIntInputs]     = useState(() => new Array(qs.length).fill(''));
-  const [timeLeft, setTimeLeft]       = useState(initDuration);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [answers, setAnswers] = useState(() => new Array(qs.length).fill(null));
+  const [states, setStates] = useState(() => new Array(qs.length).fill(S.NOT_VISITED));
+  const [intInputs, setIntInputs] = useState(() => new Array(qs.length).fill(''));
+  const [timeLeft, setTimeLeft] = useState(initDuration);
   const [showConfirm, setShowConfirm] = useState(false);
   const [activeSection, setActiveSection] = useState('Physics');
   const timerRef = useRef(null);
@@ -500,12 +497,12 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
     onSubmit(result);
   }, [answers, qs, test.id, onSubmit]);
 
-  const sectionQs    = (sec) => qs.filter(q => q.section === sec);
+  const sectionQs = (sec) => qs.filter(q => q.section === sec);
   const sectionStart = (sec) => qs.findIndex(q => q.section === sec);
 
-  const answered   = answers.filter(a => a !== null).length;
-  const marked     = states.filter(s => s === S.MARKED || s === S.MARKED_ANSWERED).length;
-  const notAnswered= states.filter(s => s === S.NOT_ANSWERED).length;
+  const answered = answers.filter(a => a !== null).length;
+  const marked = states.filter(s => s === S.MARKED || s === S.MARKED_ANSWERED).length;
+  const notAnswered = states.filter(s => s === S.NOT_ANSWERED).length;
   const notVisited = states.filter(s => s === S.NOT_VISITED).length;
   const isLastFive = timeLeft <= 300;
 
@@ -548,11 +545,11 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
       {/* Section tabs */}
       <div style={{ background: 'var(--bg2)', borderBottom: '1px solid var(--border)', display: 'flex', flexShrink: 0 }}>
         {sections.map(sec => {
-          const secQs      = sectionQs(sec);
-          const start      = sectionStart(sec);
+          const secQs = sectionQs(sec);
+          const start = sectionStart(sec);
           const secAnswered = secQs.filter((_, i) => answers[start + i] !== null).length;
-          const isActive   = sec === activeSection;
-          const col        = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
+          const isActive = sec === activeSection;
+          const col = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
           return (
             <button key={sec} onClick={() => { setActiveSection(sec); setCurrentIdx(sectionStart(sec)); }} style={{
               flex: 1, padding: '10px 8px', borderRadius: 0,
@@ -606,7 +603,7 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
             {currentQ.type === 'mcq' && (
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
                 {OPTION_LABELS.map((label, oi) => {
-                  const optNum    = oi + 1;
+                  const optNum = oi + 1;
                   const isSelected = answers[currentIdx] === optNum;
                   return (
                     <button key={oi} onClick={() => handleAnswer(optNum)} style={{
@@ -685,10 +682,10 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
               display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8
             }}>
               {[
-                { label: 'Answered',  val: answered,    color: 'var(--green)' },
-                { label: 'Marked',    val: marked,      color: 'var(--purple)' },
-                { label: 'Not Ans.',  val: notAnswered, color: 'var(--red)' },
-                { label: 'Not Visit.',val: notVisited,  color: 'var(--grey)' },
+                { label: 'Answered', val: answered, color: 'var(--green)' },
+                { label: 'Marked', val: marked, color: 'var(--purple)' },
+                { label: 'Not Ans.', val: notAnswered, color: 'var(--red)' },
+                { label: 'Not Visit.', val: notVisited, color: 'var(--grey)' },
               ].map(item => (
                 <div key={item.label} style={{ textAlign: 'center' }}>
                   <div style={{ fontWeight: 800, fontSize: '1.2rem', color: item.color }}>{item.val}</div>
@@ -699,9 +696,9 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
 
             {/* Section question grids */}
             {sections.map(sec => {
-              const start     = sectionStart(sec);
+              const start = sectionStart(sec);
               const secQsList = sectionQs(sec);
-              const col       = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
+              const col = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
               return (
                 <div key={sec} style={{ marginBottom: 16 }}>
                   <div style={{ fontSize: '0.72rem', fontWeight: 700, color: col, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -741,10 +738,10 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 24 }}>
               {[
-                { label: 'Answered',    val: answered,    color: 'var(--green)',  bg: '#22c55e22' },
-                { label: 'Not Answered',val: notAnswered, color: 'var(--red)',    bg: '#ef444422' },
-                { label: 'Marked',      val: marked,      color: 'var(--purple)', bg: '#a855f722' },
-                { label: 'Not Visited', val: notVisited,  color: 'var(--grey)',   bg: '#47556922' },
+                { label: 'Answered', val: answered, color: 'var(--green)', bg: '#22c55e22' },
+                { label: 'Not Answered', val: notAnswered, color: 'var(--red)', bg: '#ef444422' },
+                { label: 'Marked', val: marked, color: 'var(--purple)', bg: '#a855f722' },
+                { label: 'Not Visited', val: notVisited, color: 'var(--grey)', bg: '#47556922' },
               ].map(item => (
                 <div key={item.label} style={{ background: item.bg, borderRadius: 10, padding: '12px', textAlign: 'center' }}>
                   <div style={{ fontSize: '1.6rem', fontWeight: 800, color: item.color }}>{item.val}</div>
@@ -821,7 +818,7 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             {[
               { label: 'Correct', val: result.correct, color: 'var(--green)', bg: '#22c55e22' },
-              { label: 'Wrong',   val: result.wrong,   color: 'var(--red)',   bg: '#ef444422' },
+              { label: 'Wrong', val: result.wrong, color: 'var(--red)', bg: '#ef444422' },
               { label: 'Skipped', val: result.skipped, color: 'var(--text3)', bg: '#64748b22' },
             ].map(item => (
               <div key={item.label} style={{ background: item.bg, borderRadius: 12, padding: '16px 28px', minWidth: 100 }}>
@@ -845,11 +842,11 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
         {/* Section-wise breakdown */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
           {['Physics', 'Chemistry', 'Mathematics'].map(sec => {
-            const secQs      = qs.filter(q => q.section === sec);
+            const secQs = qs.filter(q => q.section === sec);
             const secDetails = result.details.filter((_, i) => qs[i].section === sec);
             const secCorrect = secDetails.filter(d => d.result === 'correct').length;
-            const secScore   = secCorrect * 4 - secDetails.filter(d => d.result === 'wrong').length;
-            const col        = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
+            const secScore = secCorrect * 4 - secDetails.filter(d => d.result === 'wrong').length;
+            const col = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
             return (
               <div key={sec} style={{
                 background: 'var(--bg2)', border: '1px solid var(--border)',
@@ -881,9 +878,9 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
 
           {filteredQs.map((q) => {
             const globalIdx = qs.indexOf(q);
-            const det       = result.details[globalIdx];
+            const det = result.details[globalIdx];
             const isCorrect = det.result === 'correct';
-            const isWrong   = det.result === 'wrong';
+            const isWrong = det.result === 'wrong';
 
             return (
               <div key={q.id} className="fade-in" style={{
@@ -997,11 +994,11 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
 // ═══════════════════════════════════════════════════════════════
 function PracticeScreen({ test, dark, setDark, onBack }) {
   const qs = test.questions;
-  const [currentIdx, setCurrentIdx]     = useState(0);
-  const [attempted, setAttempted]       = useState(() => new Set());
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [attempted, setAttempted] = useState(() => new Set());
   const [showSolution, setShowSolution] = useState(false);
-  const [selectedOpt, setSelectedOpt]   = useState(null);
-  const [intInput, setIntInput]         = useState('');
+  const [selectedOpt, setSelectedOpt] = useState(null);
+  const [intInput, setIntInput] = useState('');
 
   const currentQ = qs[currentIdx];
 
@@ -1024,7 +1021,7 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
 
   const sections = test.subjects || ['Physics', 'Chemistry', 'Mathematics'];
   const sectionStart = (sec) => qs.findIndex(q => q.section === sec);
-  const sectionQs    = (sec) => qs.filter(q => q.section === sec);
+  const sectionQs = (sec) => qs.filter(q => q.section === sec);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
@@ -1083,7 +1080,7 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
             {currentQ.type === 'mcq' && !showSolution && (
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
                 {OPTION_LABELS.map((label, oi) => {
-                  const optNum     = oi + 1;
+                  const optNum = oi + 1;
                   const isSelected = selectedOpt === optNum;
                   return (
                     <button key={oi} onClick={() => setSelectedOpt(optNum)} style={{
@@ -1182,9 +1179,9 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
               <div style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>Attempted ({pct}%)</div>
             </div>
             {sections.map(sec => {
-              const start     = sectionStart(sec);
+              const start = sectionStart(sec);
               const secQsList = sectionQs(sec);
-              const col       = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
+              const col = sec === 'Physics' ? 'var(--phys)' : sec === 'Chemistry' ? 'var(--chem)' : 'var(--math)';
               return (
                 <div key={sec} style={{ marginBottom: 16 }}>
                   <div style={{ fontSize: '0.72rem', fontWeight: 700, color: col, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -1192,9 +1189,9 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                     {secQsList.map((q, i) => {
-                      const globalIdx  = start + i;
+                      const globalIdx = start + i;
                       const isAttempted = attempted.has(globalIdx);
-                      const isCurrent   = globalIdx === currentIdx;
+                      const isCurrent = globalIdx === currentIdx;
                       return (
                         <div key={globalIdx}
                           style={{
@@ -1225,11 +1222,11 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
 //  APP ROOT
 // ═══════════════════════════════════════════════════════════════
 export default function App() {
-  const [dark, setDark]               = useState(true);
-  const [screen, setScreen]           = useState('home');
+  const [dark, setDark] = useState(true);
+  const [screen, setScreen] = useState('home');
   const [selectedTest, setSelectedTest] = useState(null);
   const [testDuration, setTestDuration] = useState(null);
-  const [testResult, setTestResult]   = useState(null);
+  const [testResult, setTestResult] = useState(null);
 
   useEffect(() => {
     const root = document.documentElement;
