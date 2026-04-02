@@ -217,13 +217,14 @@ function HomeScreen({ dark, setDark, onSelect }) {
 
 function TestCard({ test, result, color, onSelect }) {
   const sections = ['Physics', 'Chemistry', 'Mathematics'];
+  const [mode, setMode] = useState('exam');
   return (
     <div className="fade-in" style={{
       background: 'var(--bg2)', border: '1px solid var(--border)',
       borderRadius: 14, padding: 20, cursor: 'pointer',
       transition: 'all 0.2s', position: 'relative', overflow: 'hidden'
     }}
-      onClick={() => onSelect(test)}
+      onClick={() => onSelect({ ...test, mode })}
       onMouseEnter={e => { e.currentTarget.style.borderColor = `var(${color})`; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.3)'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
     >
@@ -238,6 +239,17 @@ function TestCard({ test, result, color, onSelect }) {
             color: s === 'Physics' ? 'var(--phys)' : s === 'Chemistry' ? 'var(--chem)' : 'var(--math)',
             border: `1px solid ${s === 'Physics' ? '#06b6d444' : s === 'Chemistry' ? '#10b98144' : '#f59e0b44'}`
           }}>{s}</span>
+        ))}
+      </div>
+      {/* Mode toggle */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }} onClick={e => e.stopPropagation()}>
+        {['exam', 'practice'].map(m => (
+          <button key={m} onClick={() => setMode(m)} style={{
+            flex: 1, padding: '6px 0', borderRadius: 7, fontSize: '0.78rem', fontWeight: 600,
+            background: mode === m ? (m === 'exam' ? 'var(--accent)' : 'var(--purple)') : 'var(--bg3)',
+            color: mode === m ? '#fff' : 'var(--text3)',
+            border: `1px solid ${mode === m ? (m === 'exam' ? 'var(--accent)' : 'var(--purple)') : 'var(--border)'}`,
+          }}>{m === 'exam' ? '🖥️ Exam' : '📖 Practice'}</button>
         ))}
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -297,35 +309,6 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack }) {
               <span style={{ color: 'var(--text3)', fontSize: '0.85rem' }}>(Default: {Math.round(test.duration / 60)} min)</span>
             </div>
           </div>
-
-                      <div style={{ fontWeight: 600, marginBottom: 16 }}>🎯 Choose Mode</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              {/* Exam Mode Card */}
-              <button onClick={() => setMode('exam')} style={{
-                background: mode === 'exam' ? '#3b82f622' : 'var(--bg3)',
-                border: `2px solid ${mode === 'exam' ? 'var(--accent)' : 'var(--border)'}`,
-                borderRadius: 12, padding: 20, textAlign: 'left',
-                transition: 'all 0.15s'
-              }}>
-                <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>{mode === 'exam' ? '🏆' : '🏛️'}</div>
-                <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 4, color: mode === 'exam' ? 'var(--accent2)' : 'var(--text)' }}>Exam Mode</div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text3)', lineHeight: 1.5 }}>
-                  Full JEE simulation with countdown timer, +4/−1 marking, auto-submit
-                </div>
-              </button>
-              {/* Practice Mode Card */}
-              <button onClick={() => setMode('practice')} style={{
-                background: mode === 'practice' ? '#22c55e22' : 'var(--bg3)',
-                border: `2px solid ${mode === 'practice' ? 'var(--green)' : 'var(--border)'}`,
-                borderRadius: 12, padding: 20, textAlign: 'left',
-                transition: 'all 0.15s'
-              }}>
-                <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>{mode === 'practice' ? '📖' : '📝'}</div>
-                <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 4, color: mode === 'practice' ? 'var(--green)' : 'var(--text)' }}>Practice Mode</div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text3)', lineHeight: 1.5 }}>
-                  No timer, progress bar, instant solutions, no negative marking
-                </div>
-              </button>            
 
           <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
             <div style={{ fontWeight: 600, marginBottom: 16 }}>📊 Marking Scheme</div>
