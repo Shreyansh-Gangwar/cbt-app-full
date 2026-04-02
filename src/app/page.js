@@ -946,45 +946,116 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
 
                   {/* Answer summary */}
                   {q.type === 'mcq' ? (
-                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                      {/* Correct answer bubble */}
-                      <div style={{
-                        display: 'flex', alignItems: 'center', gap: 8,
-                        background: '#22c55e22', border: '1px solid var(--green)',
-                        borderRadius: 8, padding: '8px 14px'
-                      }}>
-                        <span style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>Correct:</span>
-                        <div style={{
-                          width: 30, height: 30, borderRadius: 8,
-                          background: 'var(--green)', color: '#fff',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontWeight: 800, fontSize: '0.95rem'
-                        }}>{OPTION_LABELS[(q.correctAnswer - 1)]}</div>
-                      </div>
-                      {/* User answer bubble (only if answered) */}
-                      {det.ans !== null && (
-                        <div style={{
-                          display: 'flex', alignItems: 'center', gap: 8,
-                          background: isCorrect ? '#22c55e22' : '#ef444422',
-                          border: `1px solid ${isCorrect ? 'var(--green)' : 'var(--red)'}`,
-                          borderRadius: 8, padding: '8px 14px'
-                        }}>
-                          <span style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>Your answer:</span>
-                          <div style={{
-                            width: 30, height: 30, borderRadius: 8,
-                            background: isCorrect ? 'var(--green)' : 'var(--red)', color: '#fff',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontWeight: 800, fontSize: '0.95rem'
-                          }}>{OPTION_LABELS[(det.ans - 1)]}</div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column', // stack instead of fighting for space
+                        gap: 10,
+                        width: '100%',
+                        padding: '0 16px',
+                      }}
+                    >
+                      {/* Correct answer */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 10,
+                          background: '#22c55e22',
+                          border: '1px solid var(--green)',
+                          borderRadius: 10,
+                          padding: '10px 14px',
+                          width: '100%',
+                          flexWrap: 'wrap', // allows text to drop if needed
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: '0.8rem',
+                            color: 'var(--text3)',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          Correct:
+                        </span>
+
+                        <div
+                          style={{
+                            minWidth: 32,
+                            height: 32,
+                            borderRadius: 8,
+                            background: 'var(--green)',
+                            color: '#fff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 800,
+                            fontSize: '0.95rem',
+                            flexShrink: 0, // prevents squishing
+                          }}
+                        >
+                          {OPTION_LABELS[q.correctAnswer - 1]}
                         </div>
-                      )}
-                      {det.ans === null && (
-                        <div style={{
-                          display: 'flex', alignItems: 'center', gap: 8,
-                          background: '#64748b22', border: '1px solid var(--border2)',
-                          borderRadius: 8, padding: '8px 14px',
-                          fontSize: '0.82rem', color: 'var(--text3)'
-                        }}>Not attempted</div>
+                      </div>
+
+                      {/* User answer */}
+                      {det.ans !== null ? (
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
+                            background: isCorrect ? '#22c55e22' : '#ef444422',
+                            border: `1px solid ${isCorrect ? 'var(--green)' : 'var(--red)'
+                              }`,
+                            borderRadius: 10,
+                            padding: '10px 14px',
+                            width: '100%',
+                            flexWrap: 'wrap',
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: '0.8rem',
+                              color: 'var(--text3)',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            Your answer:
+                          </span>
+
+                          <div
+                            style={{
+                              minWidth: 32,
+                              height: 32,
+                              borderRadius: 8,
+                              background: isCorrect ? 'var(--green)' : 'var(--red)',
+                              color: '#fff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontWeight: 800,
+                              fontSize: '0.95rem',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {OPTION_LABELS[det.ans - 1]}
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            background: '#64748b22',
+                            border: '1px solid var(--border2)',
+                            borderRadius: 10,
+                            padding: '10px 14px',
+                            fontSize: '0.82rem',
+                            color: 'var(--text3)',
+                            width: '100%',
+                          }}
+                        >
+                          Not attempted
+                        </div>
                       )}
                     </div>
                   ) : (
