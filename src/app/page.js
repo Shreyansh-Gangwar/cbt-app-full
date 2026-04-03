@@ -221,7 +221,7 @@ function TestCard({ test, result, color, onSelect }) {
       borderRadius: 14, padding: 20, cursor: 'pointer',
       transition: 'all 0.2s', position: 'relative', overflow: 'hidden'
     }}
-      onClick={() => onSelect({ ...test, mode })}
+      onClick={() => onSelect(test)}
       onMouseEnter={e => { e.currentTarget.style.borderColor = `var(${color})`; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.3)'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
     >
@@ -238,17 +238,7 @@ function TestCard({ test, result, color, onSelect }) {
           }}>{s}</span>
         ))}
       </div>
-      {/* Mode toggle */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }} onClick={e => e.stopPropagation()}>
-        {['exam', 'practice'].map(m => (
-          <button key={m} onClick={() => setMode(m)} style={{
-            flex: 1, padding: '6px 0', borderRadius: 7, fontSize: '0.78rem', fontWeight: 600,
-            background: mode === m ? (m === 'exam' ? 'var(--accent)' : 'var(--purple)') : 'var(--bg3)',
-            color: mode === m ? '#fff' : 'var(--text3)',
-            border: `1px solid ${mode === m ? (m === 'exam' ? 'var(--accent)' : 'var(--purple)') : 'var(--border)'}`,
-          }}>{m === 'exam' ? '🖥️ Exam' : '📖 Practice'}</button>
-        ))}
-      </div>
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>
           {test.totalQuestions}Q · {Math.round(test.duration / 60)} min · {test.maxMarks} marks
@@ -291,17 +281,7 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack, onSwitchToPr
           <h1 style={{ fontWeight: 800, fontSize: '1.8rem', letterSpacing: '-0.03em', marginBottom: 6 }}>General Instructions</h1>
           <div style={{ color: 'var(--text3)', marginBottom: 24 }}>Please read carefully before starting the test</div>
 
-          {/* Mode toggle */}
-          <div style={{ display: 'flex', gap: 8, marginBottom: 32 }}>
-            {['exam', 'practice'].map(m => (
-              <button key={m} onClick={() => m === 'practice' && onSwitchToPractice()} style={{
-                flex: 1, padding: '10px 0', borderRadius: 8, fontSize: '0.88rem', fontWeight: 600,
-                background: m === 'exam' ? 'var(--accent)' : 'var(--bg3)',
-                color: m === 'exam' ? '#fff' : 'var(--text2)',
-                border: `1px solid ${m === 'exam' ? 'var(--accent)' : 'var(--border)'}`,
-              }}>{m === 'exam' ? '🖥️ Exam Mode' : '📖 Practice Mode'}</button>
-            ))}
-          </div>
+
 
           <div style={{ background: 'var(--bg2)', border: '1px solid var(--accent)44', borderRadius: 12, padding: 20, marginBottom: 24 }}>
             <div style={{ fontWeight: 600, marginBottom: 12, color: 'var(--accent2)' }}>⏱️ Set Test Duration</div>
