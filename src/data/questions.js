@@ -166,7 +166,7 @@ export const tests = [
         questionImage: "/q/q25.jpg",
         correctAnswer: 17,
       },
- 
+
       // ── CHEMISTRY (Q26–Q50) ─────────────────────────────────
       {
         id: 26, section: "Chemistry", type: "mcq",
@@ -294,7 +294,7 @@ export const tests = [
         questionImage: "/q/q50.jpg",
         correctAnswer: 4,
       },
- 
+
       // ── MATHEMATICS (Q51–Q75) ───────────────────────────────
       {
         id: 51, section: "Mathematics", type: "mcq",
@@ -456,7 +456,7 @@ export const tests = [
   //  PRACTICE ONLY — Electrostatics Selected Questions
   // ───────────────────────────────────────────────────────────
   {
-    id: "pr_electrostatics",
+    id: "sbt_electrostatics",
     name: "Electrostatics SBT",
     mode: "practice",
     subject: "Physics",
@@ -467,36 +467,36 @@ export const tests = [
     maxMarks: 0,
     totalQuestions: 60,
     questions: [
-      { id: 3,   section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q3.jpeg",   solutionImage: "/a/SBT-Electrostatics/a3.jpeg",   correctAnswer: 1 },
-      { id: 6,   section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q6.jpeg",   solutionImage: "/a/SBT-Electrostatics/a6.jpeg",   correctAnswer: 1 },
-      { id: 8,   section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q8.jpeg",   solutionImage: "/a/SBT-Electrostatics/a8.jpeg",   correctAnswer: 1 },
-      { id: 15,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q15.jpeg",  solutionImage: "/a/SBT-Electrostatics/a15.jpeg",  correctAnswer: 1 },
-      { id: 18,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q18.jpeg",  solutionImage: "/a/SBT-Electrostatics/a18.jpeg",  correctAnswer: 1 },
-      { id: 22,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q22.jpeg",  solutionImage: "/a/SBT-Electrostatics/a22.jpeg",  correctAnswer: 1 },
-      { id: 25,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q25.jpeg",  solutionImage: "/a/SBT-Electrostatics/a25.jpeg",  correctAnswer: 1 },
-      { id: 26,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q26.jpeg",  solutionImage: "/a/SBT-Electrostatics/a26.jpeg",  correctAnswer: 1 },
-      { id: 29,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q29.jpeg",  solutionImage: "/a/SBT-Electrostatics/a29.jpeg",  correctAnswer: 1 },
-      { id: 32,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q32.jpeg",  solutionImage: "/a/SBT-Electrostatics/a32.jpeg",  correctAnswer: 1 },
-      { id: 33,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q33.jpeg",  solutionImage: "/a/SBT-Electrostatics/a33.jpeg",  correctAnswer: 1 },
-      { id: 35,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q35.jpeg",  solutionImage: "/a/SBT-Electrostatics/a35.jpeg",  correctAnswer: 1 },
-      { id: 38,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q38.jpeg",  solutionImage: "/a/SBT-Electrostatics/a38.jpeg",  correctAnswer: 1 },
-      { id: 54,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q54.jpeg",  solutionImage: "/a/SBT-Electrostatics/a54.jpeg",  correctAnswer: 1 },
-      { id: 55,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q55.jpeg",  solutionImage: "/a/SBT-Electrostatics/a55.jpeg",  correctAnswer: 1 },
-      { id: 60,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q60.jpeg",  solutionImage: "/a/SBT-Electrostatics/a60.jpeg",  correctAnswer: 1 },
-      { id: 61,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q61.jpeg",  solutionImage: "/a/SBT-Electrostatics/a61.jpeg",  correctAnswer: 1 },
-      { id: 64,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q64.jpeg",  solutionImage: "/a/SBT-Electrostatics/a64.jpeg",  correctAnswer: 1 },
-      { id: 65,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q65.jpeg",  solutionImage: "/a/SBT-Electrostatics/a65.jpeg",  correctAnswer: 1 },
-      { id: 68,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q68.jpeg",  solutionImage: "/a/SBT-Electrostatics/a68.jpeg",  correctAnswer: 1 },
-      { id: 69,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q69.jpeg",  solutionImage: "/a/SBT-Electrostatics/a69.jpeg",  correctAnswer: 1 },
-      { id: 73,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q73.jpeg",  solutionImage: "/a/SBT-Electrostatics/a73.jpeg",  correctAnswer: 1 },
-      { id: 74,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q74.jpeg",  solutionImage: "/a/SBT-Electrostatics/a74.jpeg",  correctAnswer: 1 },
-      { id: 77,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q77.jpeg",  solutionImage: "/a/SBT-Electrostatics/a77.jpeg",  correctAnswer: 1 },
-      { id: 78,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q78.jpeg",  solutionImage: "/a/SBT-Electrostatics/a78.jpeg",  correctAnswer: 1 },
-      { id: 88,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q88.jpeg",  solutionImage: "/a/SBT-Electrostatics/a88.jpeg",  correctAnswer: 1 },
-      { id: 91,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q91.jpeg",  solutionImage: "/a/SBT-Electrostatics/a91.jpeg",  correctAnswer: 1 },
-      { id: 95,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q95.jpeg",  solutionImage: "/a/SBT-Electrostatics/a95.jpeg",  correctAnswer: 1 },
-      { id: 96,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q96.jpeg",  solutionImage: "/a/SBT-Electrostatics/a96.jpeg",  correctAnswer: 1 },
-      { id: 97,  section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q97.jpeg",  solutionImage: "/a/SBT-Electrostatics/a97.jpeg",  correctAnswer: 1 },
+      { id: 3, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q3.jpeg", solutionImage: "/a/SBT-Electrostatics/a3.jpeg", correctAnswer: 1 },
+      { id: 6, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q6.jpeg", solutionImage: "/a/SBT-Electrostatics/a6.jpeg", correctAnswer: 1 },
+      { id: 8, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q8.jpeg", solutionImage: "/a/SBT-Electrostatics/a8.jpeg", correctAnswer: 1 },
+      { id: 15, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q15.jpeg", solutionImage: "/a/SBT-Electrostatics/a15.jpeg", correctAnswer: 1 },
+      { id: 18, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q18.jpeg", solutionImage: "/a/SBT-Electrostatics/a18.jpeg", correctAnswer: 1 },
+      { id: 22, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q22.jpeg", solutionImage: "/a/SBT-Electrostatics/a22.jpeg", correctAnswer: 1 },
+      { id: 25, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q25.jpeg", solutionImage: "/a/SBT-Electrostatics/a25.jpeg", correctAnswer: 1 },
+      { id: 26, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q26.jpeg", solutionImage: "/a/SBT-Electrostatics/a26.jpeg", correctAnswer: 1 },
+      { id: 29, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q29.jpeg", solutionImage: "/a/SBT-Electrostatics/a29.jpeg", correctAnswer: 1 },
+      { id: 32, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q32.jpeg", solutionImage: "/a/SBT-Electrostatics/a32.jpeg", correctAnswer: 1 },
+      { id: 33, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q33.jpeg", solutionImage: "/a/SBT-Electrostatics/a33.jpeg", correctAnswer: 1 },
+      { id: 35, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q35.jpeg", solutionImage: "/a/SBT-Electrostatics/a35.jpeg", correctAnswer: 1 },
+      { id: 38, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q38.jpeg", solutionImage: "/a/SBT-Electrostatics/a38.jpeg", correctAnswer: 1 },
+      { id: 54, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q54.jpeg", solutionImage: "/a/SBT-Electrostatics/a54.jpeg", correctAnswer: 1 },
+      { id: 55, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q55.jpeg", solutionImage: "/a/SBT-Electrostatics/a55.jpeg", correctAnswer: 1 },
+      { id: 60, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q60.jpeg", solutionImage: "/a/SBT-Electrostatics/a60.jpeg", correctAnswer: 1 },
+      { id: 61, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q61.jpeg", solutionImage: "/a/SBT-Electrostatics/a61.jpeg", correctAnswer: 1 },
+      { id: 64, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q64.jpeg", solutionImage: "/a/SBT-Electrostatics/a64.jpeg", correctAnswer: 1 },
+      { id: 65, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q65.jpeg", solutionImage: "/a/SBT-Electrostatics/a65.jpeg", correctAnswer: 1 },
+      { id: 68, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q68.jpeg", solutionImage: "/a/SBT-Electrostatics/a68.jpeg", correctAnswer: 1 },
+      { id: 69, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q69.jpeg", solutionImage: "/a/SBT-Electrostatics/a69.jpeg", correctAnswer: 1 },
+      { id: 73, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q73.jpeg", solutionImage: "/a/SBT-Electrostatics/a73.jpeg", correctAnswer: 1 },
+      { id: 74, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q74.jpeg", solutionImage: "/a/SBT-Electrostatics/a74.jpeg", correctAnswer: 1 },
+      { id: 77, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q77.jpeg", solutionImage: "/a/SBT-Electrostatics/a77.jpeg", correctAnswer: 1 },
+      { id: 78, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q78.jpeg", solutionImage: "/a/SBT-Electrostatics/a78.jpeg", correctAnswer: 1 },
+      { id: 88, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q88.jpeg", solutionImage: "/a/SBT-Electrostatics/a88.jpeg", correctAnswer: 1 },
+      { id: 91, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q91.jpeg", solutionImage: "/a/SBT-Electrostatics/a91.jpeg", correctAnswer: 1 },
+      { id: 95, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q95.jpeg", solutionImage: "/a/SBT-Electrostatics/a95.jpeg", correctAnswer: 1 },
+      { id: 96, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q96.jpeg", solutionImage: "/a/SBT-Electrostatics/a96.jpeg", correctAnswer: 1 },
+      { id: 97, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q97.jpeg", solutionImage: "/a/SBT-Electrostatics/a97.jpeg", correctAnswer: 1 },
       { id: 100, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q100.jpeg", solutionImage: "/a/SBT-Electrostatics/a100.jpeg", correctAnswer: 1 },
       { id: 101, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q101.jpeg", solutionImage: "/a/SBT-Electrostatics/a101.jpeg", correctAnswer: 1 },
       { id: 103, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q103.jpeg", solutionImage: "/a/SBT-Electrostatics/a103.jpeg", correctAnswer: 1 },
@@ -529,6 +529,108 @@ export const tests = [
       { id: 166, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q166.jpeg", solutionImage: "/a/SBT-Electrostatics/a166.jpeg", correctAnswer: 1 },
     ]
   },
+  {
+    id: "app_electrostatics",
+    name: "APP-Electrostatics",
+    mode: "practice",
+    subject: "Physics",
+    subjects: ["Physics"],
+    chapter: "Electrostatics — Advanced Practice Problems",
+    duration: 0,
+    date: "03/04/2026",
+    maxMarks: 0,
+    totalQuestions: 70,
+    questions: [
+
+      // ── 1–15 SINGLE CORRECT ──
+      { id: 1, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q1.png", solutionImage: "/a/APP-Electrostatics/a1.png", solution: "Solution", correctAnswer: 3 },
+      { id: 2, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q2.png", solutionImage: "/a/APP-Electrostatics/a2.png", solution: "Solution", correctAnswer: 3 },
+      { id: 3, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q3.png", solutionImage: "/a/APP-Electrostatics/a3.png", solution: "Solution", correctAnswer: 2 },
+      { id: 4, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q4.png", solutionImage: "/a/APP-Electrostatics/a4.png", solution: "Solution", correctAnswer: 3 },
+      { id: 5, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q5.png", solutionImage: "/a/APP-Electrostatics/a5.png", solution: "Solution", correctAnswer: 4 },
+      { id: 6, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q6.png", solutionImage: "/a/APP-Electrostatics/a6.png", solution: "Solution", correctAnswer: 2 },
+      { id: 7, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q7.png", solutionImage: "/a/APP-Electrostatics/a7.png", solution: "Solution", correctAnswer: 2 },
+      { id: 8, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q8.png", solutionImage: "/a/APP-Electrostatics/a8.png", solution: "Solution", correctAnswer: 1 },
+      { id: 9, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q9.png", solutionImage: "/a/APP-Electrostatics/a9.png", solution: "Solution", correctAnswer: 2 },
+      { id: 10, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q10.png", solutionImage: "/a/APP-Electrostatics/a10.png", solution: "Solution", correctAnswer: 4 },
+      { id: 11, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q11.png", solutionImage: "/a/APP-Electrostatics/a11.png", solution: "Solution", correctAnswer: 2 },
+      { id: 12, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q12.png", solutionImage: "/a/APP-Electrostatics/a12.png", solution: "Solution", correctAnswer: 3 },
+      { id: 13, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q13.png", solutionImage: "/a/APP-Electrostatics/a13.png", solution: "Solution", correctAnswer: 1 },
+      { id: 14, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q14.png", solutionImage: "/a/APP-Electrostatics/a14.png", solution: "Solution", correctAnswer: 1 },
+      { id: 15, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q15.png", solutionImage: "/a/APP-Electrostatics/a15.png", solution: "Solution", correctAnswer: 2 },
+
+      // ── 16–45 MULTI CORRECT ──
+      { id: 16, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q16.png", solutionImage: "/a/APP-Electrostatics/a16.png", solution: "Solution", correctAnswer: "AC" },
+      { id: 17, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q17.png", solutionImage: "/a/APP-Electrostatics/a17.png", solution: "Solution", correctAnswer: "AD" },
+      { id: 18, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q18.png", solutionImage: "/a/APP-Electrostatics/a18.png", solution: "Solution", correctAnswer: "ABD" },
+      { id: 19, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q19.png", solutionImage: "/a/APP-Electrostatics/a19.png", solution: "Solution", correctAnswer: "AB" },
+      { id: 20, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q20.png", solutionImage: "/a/APP-Electrostatics/a20.png", solution: "Solution", correctAnswer: "AD" },
+
+      { id: 21, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q21.png", solutionImage: "/a/APP-Electrostatics/a21.png", solution: "Solution", correctAnswer: "BCD" },
+      { id: 22, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q22.png", solutionImage: "/a/APP-Electrostatics/a22.png", solution: "Solution", correctAnswer: "BCD" },
+      { id: 23, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q23.png", solutionImage: "/a/APP-Electrostatics/a23.png", solution: "Solution", correctAnswer: "BC" },
+      { id: 24, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q24.png", solutionImage: "/a/APP-Electrostatics/a24.png", solution: "Solution", correctAnswer: "AC" },
+      { id: 25, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q25.png", solutionImage: "/a/APP-Electrostatics/a25.png", solution: "Solution", correctAnswer: "AB" },
+
+      { id: 26, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q26.png", solutionImage: "/a/APP-Electrostatics/a26.png", solution: "Solution", correctAnswer: 2 },
+      { id: 27, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q27.png", solutionImage: "/a/APP-Electrostatics/a27.png", solution: "Solution", correctAnswer: "ABD" },
+      { id: 28, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q28.png", solutionImage: "/a/APP-Electrostatics/a28.png", solution: "Solution", correctAnswer: "ABCD" },
+      { id: 29, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q29.png", solutionImage: "/a/APP-Electrostatics/a29.png", solution: "Solution", correctAnswer: "AD" },
+      { id: 30, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q30.png", solutionImage: "/a/APP-Electrostatics/a30.png", solution: "Solution", correctAnswer: "ABC" },
+
+      { id: 31, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q31.png", solutionImage: "/a/APP-Electrostatics/a31.png", solution: "Solution", correctAnswer: "ABC" },
+      { id: 32, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q32.png", solutionImage: "/a/APP-Electrostatics/a32.png", solution: "Solution", correctAnswer: "ABCD" },
+      { id: 33, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q33.png", solutionImage: "/a/APP-Electrostatics/a33.png", solution: "Solution", correctAnswer: 2 },
+      { id: 34, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q34.png", solutionImage: "/a/APP-Electrostatics/a34.png", solution: "Solution", correctAnswer: "AD" },
+      { id: 35, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q35.png", solutionImage: "/a/APP-Electrostatics/a35.png", solution: "Solution", correctAnswer: "ACD" },
+
+      { id: 36, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q36.png", solutionImage: "/a/APP-Electrostatics/a36.png", solution: "Solution", correctAnswer: "BC" },
+      { id: 37, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q37.png", solutionImage: "/a/APP-Electrostatics/a37.png", solution: "Solution", correctAnswer: "AD" },
+      { id: 38, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q38.png", solutionImage: "/a/APP-Electrostatics/a38.png", solution: "Solution", correctAnswer: "ABCD" },
+      { id: 39, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q39.png", solutionImage: "/a/APP-Electrostatics/a39.png", solution: "Solution", correctAnswer: "AB" },
+      { id: 40, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q40.png", solutionImage: "/a/APP-Electrostatics/a40.png", solution: "Solution", correctAnswer: "ACD" },
+
+      // ── 41–45 (single correct resumed) ──
+      { id: 41, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q41.png", solutionImage: "/a/APP-Electrostatics/a41.png", solution: "Solution", correctAnswer: 1 },
+      { id: 42, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q42.png", solutionImage: "/a/APP-Electrostatics/a42.png", solution: "Solution", correctAnswer: 1 },
+      { id: 43, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q43.png", solutionImage: "/a/APP-Electrostatics/a43.png", solution: "Solution", correctAnswer: 3 },
+      { id: 44, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q44.png", solutionImage: "/a/APP-Electrostatics/a44.png", solution: "Solution", correctAnswer: 3 },
+      { id: 45, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q45.png", solutionImage: "/a/APP-Electrostatics/a45.png", solution: "Solution", correctAnswer: 3 },
+
+      // ── 46–50 MATRIX MATCH ──
+      { id: 46, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q46.png", solutionImage: "/a/APP-Electrostatics/a46.png", solution: "A-q,r ; B-p,s,t ; C-p,q,t ; D-p,s,t", correctAnswer: "matrix" },
+      { id: 47, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q47.png", solutionImage: "/a/APP-Electrostatics/a47.png", solution: "Solution", correctAnswer: 4 },
+      { id: 48, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q48.png", solutionImage: "/a/APP-Electrostatics/a48.png", solution: "Solution", correctAnswer: 2 },
+      { id: 49, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q49.png", solutionImage: "/a/APP-Electrostatics/a49.png", solution: "A-pq ; B-s ; C-s ; D-r", correctAnswer: "matrix" },
+      { id: 50, section: "Physics", type: "mcq", questionImage: "/q/APP-Electrostatics/q50.png", solutionImage: "/a/APP-Electrostatics/a50.png", solution: "A-q ; B-p ; C-s ; D-r", correctAnswer: "matrix" },
+
+      // ── 51–70 INTEGER ──
+      { id: 51, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q51.png", solutionImage: "/a/APP-Electrostatics/a51.png", solution: "Solution", correctAnswer: 9 },
+      { id: 52, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q52.png", solutionImage: "/a/APP-Electrostatics/a52.png", solution: "Solution", correctAnswer: 2 },
+      { id: 53, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q53.png", solutionImage: "/a/APP-Electrostatics/a53.png", solution: "Solution", correctAnswer: 4 },
+      { id: 54, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q54.png", solutionImage: "/a/APP-Electrostatics/a54.png", solution: "Solution", correctAnswer: 2 },
+      { id: 55, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q55.png", solutionImage: "/a/APP-Electrostatics/a55.png", solution: "Solution", correctAnswer: 3 },
+
+      { id: 56, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q56.png", solutionImage: "/a/APP-Electrostatics/a56.png", solution: "Solution", correctAnswer: 9 },
+      { id: 57, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q57.png", solutionImage: "/a/APP-Electrostatics/a57.png", solution: "Solution", correctAnswer: 6 },
+      { id: 58, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q58.png", solutionImage: "/a/APP-Electrostatics/a58.png", solution: "Solution", correctAnswer: 1 },
+      { id: 59, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q59.png", solutionImage: "/a/APP-Electrostatics/a59.png", solution: "Solution", correctAnswer: 3 },
+      { id: 60, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q60.png", solutionImage: "/a/APP-Electrostatics/a60.png", solution: "Solution", correctAnswer: 8 },
+
+      { id: 61, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q61.png", solutionImage: "/a/APP-Electrostatics/a61.png", solution: "Solution", correctAnswer: 5 },
+      { id: 62, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q62.png", solutionImage: "/a/APP-Electrostatics/a62.png", solution: "Solution", correctAnswer: 0.75 },
+      { id: 63, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q63.png", solutionImage: "/a/APP-Electrostatics/a63.png", solution: "Solution", correctAnswer: 2 },
+      { id: 64, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q64.png", solutionImage: "/a/APP-Electrostatics/a64.png", solution: "Solution", correctAnswer: 1 },
+      { id: 65, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q65.png", solutionImage: "/a/APP-Electrostatics/a65.png", solution: "Solution", correctAnswer: 2.5 },
+
+      { id: 66, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q66.png", solutionImage: "/a/APP-Electrostatics/a66.png", solution: "Solution", correctAnswer: 4.8 },
+      { id: 67, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q67.png", solutionImage: "/a/APP-Electrostatics/a67.png", solution: "Solution", correctAnswer: 9 },
+      { id: 68, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q68.png", solutionImage: "/a/APP-Electrostatics/a68.png", solution: "Solution", correctAnswer: 4 },
+      { id: 69, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q69.png", solutionImage: "/a/APP-Electrostatics/a69.png", solution: "Solution", correctAnswer: 20 },
+      { id: 70, section: "Physics", type: "integer", questionImage: "/q/APP-Electrostatics/q70.png", solutionImage: "/a/APP-Electrostatics/a70.png", solution: "Solution", correctAnswer: 4 },
+
+    ]
+  }
 ];
 
 // ── Helpers ────────────────────────────────────────────────────

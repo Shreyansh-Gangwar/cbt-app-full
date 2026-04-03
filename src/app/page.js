@@ -1232,7 +1232,6 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
                 color: '#fff', marginBottom: 20
               }}>Show Answer & Solution →</button>
             )}
-
             {/* Solution panel */}
             {showSolution && (
               <div
@@ -1251,9 +1250,10 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
                     padding: '14px 18px',
                     borderBottom: '1px solid var(--border)',
                     display: 'flex',
-                    gap: 10,
-                    flexWrap: 'wrap',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: 10,
                   }}
                 >
                   <span
@@ -1266,22 +1266,83 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
                     ✓ Solution
                   </span>
 
-                  {/* Answer box (uniform) */}
-                  <div
-                    style={{
-                      background: '#22c55e22',
-                      border: '1px solid var(--green)',
-                      borderRadius: 8,
-                      padding: '6px 14px',
-                      color: 'var(--green)',
-                      fontWeight: 700,
-                    }}
-                  >
-                    {currentQ.correctAnswer}
+                  {/* Answer display */}
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {(() => {
+                      const ans = currentQ.correctAnswer;
+
+                      // Matrix
+                      if (ans === "matrix") {
+                        return (
+                          <div
+                            style={{
+                              background: '#f59e0b22',
+                              border: '1px solid #f59e0b',
+                              borderRadius: 8,
+                              padding: '6px 12px',
+                              color: '#f59e0b',
+                              fontWeight: 600,
+                              fontSize: '0.85rem',
+                            }}
+                          >
+                            Matrix Match
+                          </div>
+                        );
+                      }
+
+                      // Multi correct
+                      if (typeof ans === "string") {
+                        return ans.split("").map((opt, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              background: '#22c55e22',
+                              border: '1px solid var(--green)',
+                              borderRadius: 6,
+                              padding: '4px 10px',
+                              color: 'var(--green)',
+                              fontWeight: 700,
+                            }}
+                          >
+                            {opt}
+                          </div>
+                        ));
+                      }
+
+                      // Single / Integer
+                      return (
+                        <div
+                          style={{
+                            background: '#22c55e22',
+                            border: '1px solid var(--green)',
+                            borderRadius: 8,
+                            padding: '6px 14px',
+                            color: 'var(--green)',
+                            fontWeight: 700,
+                          }}
+                        >
+                          {ans}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
 
-                {/* Solution content */}
+                {/* Matrix solution text */}
+                {currentQ.correctAnswer === "matrix" && (
+                  <div
+                    style={{
+                      padding: '12px 18px',
+                      fontSize: '0.9rem',
+                      color: 'var(--text2)',
+                      borderBottom: '1px solid var(--border)',
+                    }}
+                  >
+                    {currentQ.solution}
+                  </div>
+                )}
+
+                {/* Solution Image */}
                 <div style={{ padding: '16px 18px' }}>
                   <QuestionImage
                     src={solutionImageSrc(currentQ)}
