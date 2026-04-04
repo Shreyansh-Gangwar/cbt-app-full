@@ -75,6 +75,30 @@ function bubbleStyle(state, selected) {
   }
 }
 
+// ── Math renderer (KaTeX) ─────────────────────────────────────
+function LatexText({ text, style }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!ref.current || !text) return;
+    if (typeof window !== 'undefined' && window.renderMathInElement) {
+      window.renderMathInElement(ref.current, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false },
+        ],
+        throwOnError: false,
+      });
+    }
+  }, [text]);
+  return (
+    <span
+      ref={ref}
+      style={{ lineHeight: 1.9, fontSize: '0.95rem', ...style }}
+      dangerouslySetInnerHTML={{ __html: text }}
+    />
+  );
+}
+
 // ── Format time ───────────────────────────────────────────────
 function fmtTime(s) {
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
@@ -1247,80 +1271,76 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
                   </span>
 
                   {/* Answer display */}
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
                     {(() => {
                       const ans = currentQ.correctAnswer;
 
-                      // Matrix
-                      if (ans === "matrix") {
+                      // ── NEW: answerText with LaTeX (practice mode) ──
+                      if (currentQ.answerText) {
                         return (
-                          <div
-                            style={{
-                              background: '#f59e0b22',
-                              border: '1px solid #f59e0b',
-                              borderRadius: 8,
-                              padding: '6px 12px',
-                              color: '#f59e0b',
-                              fontWeight: 600,
-                              fontSize: '0.85rem',
-                            }}
-                          >
-                            Matrix Match
-                          </div>
-                        );
-                      }
-
-                      // Multi correct
-                      if (typeof ans === "string") {
-                        return ans.split("").map((opt, i) => (
-                          <div
-                            key={i}
-                            style={{
-                              background: '#22c55e22',
-                              border: '1px solid var(--green)',
-                              borderRadius: 6,
-                              padding: '4px 10px',
-                              color: 'var(--green)',
-                              fontWeight: 700,
-                            }}
-                          >
-                            {opt}
-                          </div>
-                        ));
-                      }
-
-                      // Single / Integer
-                      return (
-                        <div
-                          style={{
+                          <div style={{
                             background: '#22c55e22',
                             border: '1px solid var(--green)',
                             borderRadius: 8,
                             padding: '6px 14px',
                             color: 'var(--green)',
+                            fontWeight: 600,
+                            maxWidth: 480,
+                          }}>
+                            <LatexText text={currentQ.answerText} />
+                          </div>
+                        );
+                      }
+
+                      // ── existing: matrix ──
+                      if (ans === "matrix") {
+                        return (
+                          <div style={{
+                            background: '#f59e0b22',
+                            border: '1px solid #f59e0b',
+                            borderRadius: 8,
+                            padding: '6px 12px',
+                            color: '#f59e0b',
+                            fontWeight: 600,
+                            fontSize: '0.85rem',
+                          }}>
+                            Matrix Match
+                          </div>
+                        );
+                      }
+
+                      // ── existing: multi correct ──
+                      if (typeof ans === "string") {
+                        return ans.split("").map((opt, i) => (
+                          <div key={i} style={{
+                            background: '#22c55e22',
+                            border: '1px solid var(--green)',
+                            borderRadius: 6,
+                            padding: '4px 10px',
+                            color: 'var(--green)',
                             fontWeight: 700,
-                          }}
-                        >
+                          }}>
+                            {opt}
+                          </div>
+                        ));
+                      }
+
+                      // ── existing: single / integer ──
+                      return (
+                        <div style={{
+                          background: '#22c55e22',
+                          border: '1px solid var(--green)',
+                          borderRadius: 8,
+                          padding: '6px 14px',
+                          color: 'var(--green)',
+                          fontWeight: 700,
+                        }}>
                           {ans}
                         </div>
                       );
                     })()}
                   </div>
                 </div>
-
-                {/* Matrix solution text */}
-                {currentQ.correctAnswer === "matrix" && (
-                  <div
-                    style={{
-                      padding: '12px 18px',
-                      fontSize: '0.9rem',
-                      color: 'var(--text2)',
-                      borderBottom: '1px solid var(--border)',
-                    }}
-                  >
-                    {currentQ.solution}
-                  </div>
-                )}
 
                 {/* Solution Image */}
                 <div style={{ padding: '16px 18px' }}>
