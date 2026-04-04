@@ -475,548 +475,191 @@ export const tests = [
     duration: 0,
     date: "03/04/2026",
     maxMarks: 0,
-    totalQuestions: 60,
+    totalQuestions: 61,
     questions: [
 
       // id 1 ← Book Q3
-      {
-        id: 1, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q1.png",
-        solutionImage: "/a/SBT-Electrostatics/a1.png",
-        correctAnswer: 1,
-        answerText: "Zero"
-      },
+      { id: 1, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q1.png", solutionImage: "/a/SBT-Electrostatics/a1.png", correctAnswer: 1, answerText: "Zero" },
 
       // id 2 ← Book Q6
-      {
-        id: 2, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q2.png",
-        solutionImage: "/a/SBT-Electrostatics/a2.png",
-        correctAnswer: 1,
-        answerText: "$$k = \\frac{q^2}{4\\pi\\varepsilon_0 L^3}\\left(\\frac{2\\sqrt{2}+1}{\\sqrt{2}}\\right)$$"
-      },
+      { id: 2, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q2.png", solutionImage: "/a/SBT-Electrostatics/a2.png", correctAnswer: 1, answerText: "$$k = \\frac{q^2}{4\\pi\\varepsilon_0 L^3}\\left(\\frac{2\\sqrt{2}+1}{\\sqrt{2}}\\right)$$" },
 
       // id 3 ← Book Q8
-      {
-        id: 3, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q3.png",
-        solutionImage: "/a/SBT-Electrostatics/a3.png",
-        correctAnswer: 1,
-        answerText: "(i) $T = 2\\pi\\sqrt{\\dfrac{L}{2g}}$ &ensp; (ii) $T = 2\\pi\\sqrt{\\dfrac{L}{g}}$ &ensp; (iii) $T = 2\\pi\\sqrt{\\dfrac{L}{\\sqrt{2}\\,g}}$ &ensp; (iv) $T = 2\\pi\\sqrt{\\dfrac{L}{g}}$"
-      },
+      { id: 3, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q3.png", solutionImage: "/a/SBT-Electrostatics/a3.png", correctAnswer: 1, answerText: "(i) $T = 2\\pi\\sqrt{\\dfrac{L}{2g}}$ &ensp; (ii) $T = 2\\pi\\sqrt{\\dfrac{L}{g}}$ &ensp; (iii) $T = 2\\pi\\sqrt{\\dfrac{L}{\\sqrt{2}\\,g}}$ &ensp; (iv) $T = 2\\pi\\sqrt{\\dfrac{L}{g}}$" },
 
       // id 4 ← Book Q15
-      {
-        id: 4, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q4.png",
-        solutionImage: "/a/SBT-Electrostatics/a4.png",
-        correctAnswer: 1,
-        answerText: "50 V"
-      },
+      { id: 4, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q4.png", solutionImage: "/a/SBT-Electrostatics/a4.png", correctAnswer: 1, answerText: "50 V" },
 
       // id 5 ← Book Q18
-      {
-        id: 5, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q5.png",
-        solutionImage: "/a/SBT-Electrostatics/a5.png",
-        correctAnswer: 1,
-        answerText: "$E_A > E_B$, $\\;V_A > V_B$"
-      },
+      { id: 5, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q5.png", solutionImage: "/a/SBT-Electrostatics/a5.png", correctAnswer: 1, answerText: "$E_A > E_B$, $\\;V_A > V_B$" },
 
       // id 6 ← Book Q22
-      {
-        id: 6, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q6.png",
-        solutionImage: "/a/SBT-Electrostatics/a6.png",
-        correctAnswer: 1,
-        answerText: "For both (a) and (b): $W = \\dfrac{Qq}{8\\pi\\varepsilon_0 r}$"
-      },
+      { id: 6, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q6.png", solutionImage: "/a/SBT-Electrostatics/a6.png", correctAnswer: 1, answerText: "For both (a) and (b): $W = \\dfrac{Qq}{8\\pi\\varepsilon_0 r}$" },
 
       // id 7 ← Book Q25
-      {
-        id: 7, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q7.png",
-        solutionImage: "/a/SBT-Electrostatics/a7.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\theta_0 = 2\\tan^{-1}\\!\\left(\\dfrac{qE}{mg}\\right)$ &ensp; (b) $E = \\dfrac{mg}{q}$"
-      },
+      { id: 7, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q7.png", solutionImage: "/a/SBT-Electrostatics/a7.png", correctAnswer: 1, answerText: "(a) $\\theta_0 = 2\\tan^{-1}\\!\\left(\\dfrac{qE}{mg}\\right)$ &ensp; (b) $E = \\dfrac{mg}{q}$" },
 
       // id 8 ← Book Q26
-      {
-        id: 8, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q8.png",
-        solutionImage: "/a/SBT-Electrostatics/a8.png",
-        correctAnswer: 1,
-        answerText: "$$-\\frac{Q^2}{16\\pi\\varepsilon_0 R}$$"
-      },
+      { id: 8, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q8.png", solutionImage: "/a/SBT-Electrostatics/a8.png", correctAnswer: 1, answerText: "$$-\\frac{Q^2}{16\\pi\\varepsilon_0 R}$$" },
 
       // id 9 ← Book Q29
-      {
-        id: 9, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q9.png",
-        solutionImage: "/a/SBT-Electrostatics/a9.png",
-        correctAnswer: 1,
-        answerText: "$$E = \\frac{6\\sqrt{3}\\,KP}{L^3},\\quad V = 0$$"
-      },
+      { id: 9, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q9.png", solutionImage: "/a/SBT-Electrostatics/a9.png", correctAnswer: 1, answerText: "$$E = \\frac{6\\sqrt{3}\\,KP}{L^3},\\quad V = 0$$" },
 
       // id 10 ← Book Q32
-      {
-        id: 10, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q10.png",
-        solutionImage: "/a/SBT-Electrostatics/a10.png",
-        correctAnswer: 1,
-        answerText: "$$\\left(\\frac{\\sqrt{17}-3}{2}\\right)mg$$"
-      },
+      { id: 10, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q10.png", solutionImage: "/a/SBT-Electrostatics/a10.png", correctAnswer: 1, answerText: "$$\\left(\\frac{\\sqrt{17}-3}{2}\\right)mg$$" },
 
       // id 11 ← Book Q33
-      {
-        id: 11, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q11.png",
-        solutionImage: "/a/SBT-Electrostatics/a11.png",
-        correctAnswer: 1,
-        answerText: "$$\\frac{32\\pi\\varepsilon_0 L^2 mg}{q}$$"
-      },
+      { id: 11, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q11.png", solutionImage: "/a/SBT-Electrostatics/a11.png", correctAnswer: 1, answerText: "$$\\frac{32\\pi\\varepsilon_0 L^2 mg}{q}$$" },
 
       // id 12 ← Book Q35
-      {
-        id: 12, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q12.png",
-        solutionImage: "/a/SBT-Electrostatics/a12.png",
-        correctAnswer: 1,
-        answerText: "(a) $Q = +3.14\\,q$ &ensp; (b) $Q = -0.22\\,q$"
-      },
+      { id: 12, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q12.png", solutionImage: "/a/SBT-Electrostatics/a12.png", correctAnswer: 1, answerText: "(a) $Q = +3.14\\,q$ &ensp; (b) $Q = -0.22\\,q$" },
 
       // id 13 ← Book Q38
-      {
-        id: 13, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q13.png",
-        solutionImage: "/a/SBT-Electrostatics/a13.png",
-        correctAnswer: 1,
-        answerText: "$$\\frac{8KQq}{r^2}$$"
-      },
+      { id: 13, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q13.png", solutionImage: "/a/SBT-Electrostatics/a13.png", correctAnswer: 1, answerText: "$$\\frac{8KQq}{r^2}$$" },
 
       // id 14 ← Book Q54
-      {
-        id: 14, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q14.png",
-        solutionImage: "/a/SBT-Electrostatics/a14.png",
-        correctAnswer: 1,
-        answerText: "(a) $T = 2\\pi\\sqrt{\\dfrac{L}{g - \\dfrac{q\\sigma}{2m\\varepsilon_0}}}$ &ensp;&ensp; (b) $T = 2\\pi\\sqrt{\\dfrac{L}{\\sqrt{g^2 + \\left(\\dfrac{qE}{m}\\right)^2 - 2g\\dfrac{qE}{m}\\cos\\beta}}}$"
-      },
+      { id: 14, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q14.png", solutionImage: "/a/SBT-Electrostatics/a14.png", correctAnswer: 1, answerText: "(a) $T = 2\\pi\\sqrt{\\dfrac{L}{g - \\dfrac{q\\sigma}{2m\\varepsilon_0}}}$ &ensp;&ensp; (b) $T = 2\\pi\\sqrt{\\dfrac{L}{\\sqrt{g^2 + \\left(\\dfrac{qE}{m}\\right)^2 - 2g\\dfrac{qE}{m}\\cos\\beta}}}$" },
 
       // id 15 ← Book Q55
-      {
-        id: 15, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q15.png",
-        solutionImage: "/a/SBT-Electrostatics/a15.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\theta = \\tan^{-1}\\!\\left(\\dfrac{3}{4}\\right)$ &ensp; (b) Yes"
-      },
+      { id: 15, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q15.png", solutionImage: "/a/SBT-Electrostatics/a15.png", correctAnswer: 1, answerText: "(a) $\\theta = \\tan^{-1}\\!\\left(\\dfrac{3}{4}\\right)$ &ensp; (b) Yes" },
 
       // id 16 ← Book Q60
-      {
-        id: 16, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q16.png",
-        solutionImage: "/a/SBT-Electrostatics/a16.png",
-        correctAnswer: 1,
-        answerText: "$2 : 1$"
-      },
+      { id: 16, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q16.png", solutionImage: "/a/SBT-Electrostatics/a16.png", correctAnswer: 1, answerText: "$2 : 1$" },
 
       // id 17 ← Book Q61
-      {
-        id: 17, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q17.png",
-        solutionImage: "/a/SBT-Electrostatics/a17.png",
-        correctAnswer: 1,
-        answerText: "(a) $q_0 = 4\\pi\\varepsilon_0 a$ &ensp; (b) $q = -4\\pi\\varepsilon_0 a$"
-      },
+      { id: 17, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q17.png", solutionImage: "/a/SBT-Electrostatics/a17.png", correctAnswer: 1, answerText: "(a) $q_0 = 4\\pi\\varepsilon_0 a$ &ensp; (b) $q = -4\\pi\\varepsilon_0 a$" },
 
       // id 18 ← Book Q64
-      {
-        id: 18, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q18.png",
-        solutionImage: "/a/SBT-Electrostatics/a18.png",
-        correctAnswer: 1,
-        answerText: "$\\sigma\\phi$"
-      },
+      { id: 18, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q18.png", solutionImage: "/a/SBT-Electrostatics/a18.png", correctAnswer: 1, answerText: "$\\sigma\\phi$" },
 
       // id 19 ← Book Q65
-      {
-        id: 19, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q19.png",
-        solutionImage: "/a/SBT-Electrostatics/a19.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\dfrac{\\sqrt{5}}{6}\\,\\dfrac{\\rho R}{\\varepsilon_0}$ &ensp; (b) $\\dfrac{\\sqrt{41}}{24}\\,\\dfrac{\\rho R}{\\varepsilon_0}$"
-      },
+      { id: 19, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q19.png", solutionImage: "/a/SBT-Electrostatics/a19.png", correctAnswer: 1, answerText: "(a) $\\dfrac{\\sqrt{5}}{6}\\,\\dfrac{\\rho R}{\\varepsilon_0}$ &ensp; (b) $\\dfrac{\\sqrt{41}}{24}\\,\\dfrac{\\rho R}{\\varepsilon_0}$" },
 
       // id 20 ← Book Q68
-      {
-        id: 20, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q20.png",
-        solutionImage: "/a/SBT-Electrostatics/a20.png",
-        correctAnswer: 1,
-        answerText: "(a) $t_0$ &ensp; (b) $\\sqrt{6mK_0}$"
-      },
+      { id: 20, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q20.png", solutionImage: "/a/SBT-Electrostatics/a20.png", correctAnswer: 1, answerText: "(a) $t_0$ &ensp; (b) $\\sqrt{6mK_0}$" },
 
       // id 21 ← Book Q69
-      {
-        id: 21, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q21.png",
-        solutionImage: "/a/SBT-Electrostatics/a21.png",
-        correctAnswer: 1,
-        answerText: "$$\\sqrt{\\frac{2qa}{3mV_0^2}\\left(y^3 - y_0^2\\right)}$$"
-      },
+      { id: 21, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q21.png", solutionImage: "/a/SBT-Electrostatics/a21.png", correctAnswer: 1, answerText: "$$\\sqrt{\\frac{2qa}{3mV_0^2}\\left(y^3 - y_0^2\\right)}$$" },
 
       // id 22 ← Book Q73
-      {
-        id: 22, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q22.png",
-        solutionImage: "/a/SBT-Electrostatics/a22.png",
-        correctAnswer: 1,
-        answerText: "(a) 5 V &ensp; (b) $\\sqrt{\\dfrac{2}{3}}$ m"
-      },
+      { id: 22, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q22.png", solutionImage: "/a/SBT-Electrostatics/a22.png", correctAnswer: 1, answerText: "(a) 5 V &ensp; (b) $\\sqrt{\\dfrac{2}{3}}$ m" },
 
       // id 23 ← Book Q74
-      {
-        id: 23, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q23.png",
-        solutionImage: "/a/SBT-Electrostatics/a23.png",
-        correctAnswer: 1,
-        answerText: "$E = 15$ V/cm; $\\;\\cos^{-1}\\!\\left(\\dfrac{2}{3}\\right)$"
-      },
+      { id: 23, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q23.png", solutionImage: "/a/SBT-Electrostatics/a23.png", correctAnswer: 1, answerText: "$E = 15$ V/cm; $\\;\\cos^{-1}\\!\\left(\\dfrac{2}{3}\\right)$" },
 
       // id 24 ← Book Q77
-      {
-        id: 24, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q24.png",
-        solutionImage: "/a/SBT-Electrostatics/a24.png",
-        correctAnswer: 1,
-        answerText: "$$\\frac{mR^2\\omega^2}{2e}$$"
-      },
+      { id: 24, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q24.png", solutionImage: "/a/SBT-Electrostatics/a24.png", correctAnswer: 1, answerText: "$$\\frac{mR^2\\omega^2}{2e}$$" },
 
       // id 25 ← Book Q78
-      {
-        id: 25, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q25.png",
-        solutionImage: "/a/SBT-Electrostatics/a25.png",
-        correctAnswer: 1,
-        answerText: "$2 : 1$"
-      },
+      { id: 25, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q25.png", solutionImage: "/a/SBT-Electrostatics/a25.png", correctAnswer: 1, answerText: "$2 : 1$" },
 
       // id 26 ← Book Q88
-      {
-        id: 26, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q26.png",
-        solutionImage: "/a/SBT-Electrostatics/a26.png",
-        correctAnswer: 1,
-        answerText: "$$E = \\frac{1}{4\\pi\\varepsilon_0}\\frac{Q}{b^2},\\quad V = \\frac{1}{4\\pi\\varepsilon_0}\\frac{Q}{b}$$"
-      },
+      { id: 26, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q26.png", solutionImage: "/a/SBT-Electrostatics/a26.png", correctAnswer: 1, answerText: "$$E = \\frac{1}{4\\pi\\varepsilon_0}\\frac{Q}{b^2},\\quad V = \\frac{1}{4\\pi\\varepsilon_0}\\frac{Q}{b}$$" },
 
       // id 27 ← Book Q91
-      {
-        id: 27, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q27.png",
-        solutionImage: "/a/SBT-Electrostatics/a27.png",
-        correctAnswer: 1,
-        answerText: "(a) $r = \\dfrac{16\\sqrt{2}\\,\\pi\\varepsilon_0 R^2 mu^2}{Qq}$ &ensp; (b) $V = \\sqrt{u^2 + \\dfrac{Qq}{4\\pi\\varepsilon_0 mR}}$"
-      },
+      { id: 27, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q27.png", solutionImage: "/a/SBT-Electrostatics/a27.png", correctAnswer: 1, answerText: "(a) $r = \\dfrac{16\\sqrt{2}\\,\\pi\\varepsilon_0 R^2 mu^2}{Qq}$ &ensp; (b) $V = \\sqrt{u^2 + \\dfrac{Qq}{4\\pi\\varepsilon_0 mR}}$" },
 
       // id 28 ← Book Q95
-      {
-        id: 28, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q28.png",
-        solutionImage: "/a/SBT-Electrostatics/a28.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\sqrt{4gL}$ &ensp; (b) $\\sqrt{4.5\\,gL}$"
-      },
+      { id: 28, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q28.png", solutionImage: "/a/SBT-Electrostatics/a28.png", correctAnswer: 1, answerText: "(a) $\\sqrt{4gL}$ &ensp; (b) $\\sqrt{4.5\\,gL}$" },
 
       // id 29 ← Book Q96
-      {
-        id: 29, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q29.png",
-        solutionImage: "/a/SBT-Electrostatics/a29.png",
-        correctAnswer: 1,
-        answerText: "(a) $72\\,g$ &ensp; (b) $4.32$ N &ensp; (c) Unstable"
-      },
+      { id: 29, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q29.png", solutionImage: "/a/SBT-Electrostatics/a29.png", correctAnswer: 1, answerText: "(a) $72\\,g$ &ensp; (b) $4.32$ N &ensp; (c) Unstable" },
 
       // id 30 ← Book Q97
-      {
-        id: 30, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q30.png",
-        solutionImage: "/a/SBT-Electrostatics/a30.png",
-        correctAnswer: 1,
-        answerText: "$$W_{ext} = -3\\,mgL$$"
-      },
+      { id: 30, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q30.png", solutionImage: "/a/SBT-Electrostatics/a30.png", correctAnswer: 1, answerText: "$$W_{ext} = -3\\,mgL$$" },
 
       // id 31 ← Book Q100
-      {
-        id: 31, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q31.png",
-        solutionImage: "/a/SBT-Electrostatics/a31.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\theta = \\tan^{-1}\\!\\left(\\dfrac{1}{2}\\right)$ &ensp; (b) $6\\,mgh$"
-      },
+      { id: 31, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q31.png", solutionImage: "/a/SBT-Electrostatics/a31.png", correctAnswer: 1, answerText: "(a) $\\theta = \\tan^{-1}\\!\\left(\\dfrac{1}{2}\\right)$ &ensp; (b) $6\\,mgh$" },
 
       // id 32 ← Book Q101
-      {
-        id: 32, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q32.png",
-        solutionImage: "/a/SBT-Electrostatics/a32.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\dfrac{KQe}{2R}$ &ensp; (b) $\\dfrac{3}{2}\\,\\dfrac{KQe}{R}$"
-      },
+      { id: 32, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q32.png", solutionImage: "/a/SBT-Electrostatics/a32.png", correctAnswer: 1, answerText: "(a) $\\dfrac{KQe}{2R}$ &ensp; (b) $\\dfrac{3}{2}\\,\\dfrac{KQe}{R}$" },
 
       // id 33 ← Book Q103
-      {
-        id: 33, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q33.png",
-        solutionImage: "/a/SBT-Electrostatics/a33.png",
-        correctAnswer: 1,
-        answerText: "$$\\frac{U_0}{3}$$"
-      },
+      { id: 33, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q33.png", solutionImage: "/a/SBT-Electrostatics/a33.png", correctAnswer: 1, answerText: "$$\\frac{U_0}{3}$$" },
 
       // id 34 ← Book Q105
-      {
-        id: 34, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q34.png",
-        solutionImage: "/a/SBT-Electrostatics/a34.png",
-        correctAnswer: 1,
-        answerText: "$$\\frac{10}{3}\\pi\\varepsilon_0 R V^2$$"
-      },
+      { id: 34, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q34.png", solutionImage: "/a/SBT-Electrostatics/a34.png", correctAnswer: 1, answerText: "$$\\frac{10}{3}\\pi\\varepsilon_0 R V^2$$" },
 
       // id 35 ← Book Q108
-      {
-        id: 35, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q35.png",
-        solutionImage: "/a/SBT-Electrostatics/a35.png",
-        correctAnswer: 1,
-        answerText: "$$V = \\frac{qr}{\\pi^2\\varepsilon_0 R^2}$$"
-      },
+      { id: 35, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q35.png", solutionImage: "/a/SBT-Electrostatics/a35.png", correctAnswer: 1, answerText: "$$V = \\frac{qr}{\\pi^2\\varepsilon_0 R^2}$$" },
 
       // id 36 ← Book Q109
-      {
-        id: 36, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q36.png",
-        solutionImage: "/a/SBT-Electrostatics/a36.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\left(\\dfrac{2}{3}\\right)^{1/3} a$ &ensp; (b) $\\left(\\dfrac{1}{9}\\right)^{1/3} a$"
-      },
+      { id: 36, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q36.png", solutionImage: "/a/SBT-Electrostatics/a36.png", correctAnswer: 1, answerText: "(a) $\\left(\\dfrac{2}{3}\\right)^{1/3} a$ &ensp; (b) $\\left(\\dfrac{1}{9}\\right)^{1/3} a$" },
 
       // id 37 ← Book Q112
-      {
-        id: 37, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q37.png",
-        solutionImage: "/a/SBT-Electrostatics/a37.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\left|\\dfrac{q_1}{q_2}\\right| = \\dfrac{2}{1}$ &ensp; (b) $\\alpha_{\\max} = 90°$"
-      },
+      { id: 37, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q37.png", solutionImage: "/a/SBT-Electrostatics/a37.png", correctAnswer: 1, answerText: "(a) $\\left|\\dfrac{q_1}{q_2}\\right| = \\dfrac{2}{1}$ &ensp; (b) $\\alpha_{\\max} = 90°$" },
 
       // id 38 ← Book Q116
-      {
-        id: 38, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q38.png",
-        solutionImage: "/a/SBT-Electrostatics/a38.png",
-        correctAnswer: 1,
-        answerText: "$$\\frac{1}{4\\pi\\varepsilon_0}\\,\\frac{\\lambda}{R}\\ln(\\sqrt{2}+1)$$"
-      },
+      { id: 38, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q38.png", solutionImage: "/a/SBT-Electrostatics/a38.png", correctAnswer: 1, answerText: "$$\\frac{1}{4\\pi\\varepsilon_0}\\,\\frac{\\lambda}{R}\\ln(\\sqrt{2}+1)$$" },
 
       // id 39 ← Book Q122
-      {
-        id: 39, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q39.png",
-        solutionImage: "/a/SBT-Electrostatics/a39.png",
-        correctAnswer: 1,
-        answerText: "(a) $6\\,dx\\,dy\\,dz$ &ensp; (b) $8\\pi\\varepsilon_0 r^3$"
-      },
+      { id: 39, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q39.png", solutionImage: "/a/SBT-Electrostatics/a39.png", correctAnswer: 1, answerText: "(a) $6\\,dx\\,dy\\,dz$ &ensp; (b) $8\\pi\\varepsilon_0 r^3$" },
 
       // id 40 ← Book Q124
-      {
-        id: 40, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q40.png",
-        solutionImage: "/a/SBT-Electrostatics/a40.png",
-        correctAnswer: 1,
-        answerText: "(a) $E_x = \\dfrac{K\\lambda R\\pi\\, x}{(R^2+x^2)^{3/2}}$ &ensp; (b) $E_y = 0$ &ensp; (c) $E_z = -\\dfrac{2K\\lambda R^2}{(R^2+x^2)^{3/2}}$"
-      },
+      { id: 40, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q40.png", solutionImage: "/a/SBT-Electrostatics/a40.png", correctAnswer: 1, answerText: "(a) $E_x = \\dfrac{K\\lambda R\\pi\\, x}{(R^2+x^2)^{3/2}}$ &ensp; (b) $E_y = 0$ &ensp; (c) $E_z = -\\dfrac{2K\\lambda R^2}{(R^2+x^2)^{3/2}}$" },
 
       // id 41 ← Book Q128
-      {
-        id: 41, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q41.png",
-        solutionImage: "/a/SBT-Electrostatics/a41.png",
-        correctAnswer: 1,
-        answerText: "$$8\\pi r^2\\left[\\varepsilon_0\\left(7P_0 + \\frac{12T}{r}\\right)\\right]^{1/2}$$"
-      },
+      { id: 41, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q41.png", solutionImage: "/a/SBT-Electrostatics/a41.png", correctAnswer: 1, answerText: "$$8\\pi r^2\\left[\\varepsilon_0\\left(7P_0 + \\frac{12T}{r}\\right)\\right]^{1/2}$$" },
 
       // id 42 ← Book Q129
-      {
-        id: 42, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q42.png",
-        solutionImage: "/a/SBT-Electrostatics/a42.png",
-        correctAnswer: 1,
-        answerText: "$$\\frac{\\sigma}{\\varepsilon_0}\\text{ in radially inward direction}$$"
-      },
+      { id: 42, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q42.png", solutionImage: "/a/SBT-Electrostatics/a42.png", correctAnswer: 1, answerText: "$$\\frac{\\sigma}{\\varepsilon_0}\\text{ in radially inward direction}$$" },
 
       // id 43 ← Book Q130
-      {
-        id: 43, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q43.png",
-        solutionImage: "/a/SBT-Electrostatics/a43.png",
-        correctAnswer: 1,
-        answerText: "$$\\frac{Qq}{4\\pi\\varepsilon_0 R^2}\\left(1 - \\frac{1}{\\sqrt{2}}\\right)$$"
-      },
+      { id: 43, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q43.png", solutionImage: "/a/SBT-Electrostatics/a43.png", correctAnswer: 1, answerText: "$$\\frac{Qq}{4\\pi\\varepsilon_0 R^2}\\left(1 - \\frac{1}{\\sqrt{2}}\\right)$$" },
 
       // id 44 ← Book Q131
-      {
-        id: 44, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q44.png",
-        solutionImage: "/a/SBT-Electrostatics/a44.png",
-        correctAnswer: 1,
-        answerText: "$$\\frac{Qq}{8\\pi\\varepsilon_0 R^2}\\left(1 - \\frac{1}{\\sqrt{2}}\\right)\\text{ in both cases}$$"
-      },
+      { id: 44, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q44.png", solutionImage: "/a/SBT-Electrostatics/a44.png", correctAnswer: 1, answerText: "$$\\frac{Qq}{8\\pi\\varepsilon_0 R^2}\\left(1 - \\frac{1}{\\sqrt{2}}\\right)\\text{ in both cases}$$" },
 
       // id 45 ← Book Q134
-      {
-        id: 45, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q45.png",
-        solutionImage: "/a/SBT-Electrostatics/a45.png",
-        correctAnswer: 1,
-        answerText: "(a) $b = \\dfrac{a}{15}$; $n = 2$ &ensp; (b) $\\sqrt{2}\\,mg$"
-      },
+      { id: 45, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q45.png", solutionImage: "/a/SBT-Electrostatics/a45.png", correctAnswer: 1, answerText: "(a) $b = \\dfrac{a}{15}$; $n = 2$ &ensp; (b) $\\sqrt{2}\\,mg$" },
 
-      // id 46 ← Book Q138 (not in answer PDF — placeholder)
-      {
-        id: 46, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q46.png",
-        solutionImage: "/a/SBT-Electrostatics/a46.png",
-        correctAnswer: 1,
-        answerText: "See solution image"
-      },
+      // id 46 ← Book Q138 (not in answer PDF)
+      { id: 46, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q46.png", solutionImage: "/a/SBT-Electrostatics/a46.png", correctAnswer: 1, answerText: "See solution image" },
 
       // id 47 ← Book Q144
-      {
-        id: 47, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q47.png",
-        solutionImage: "/a/SBT-Electrostatics/a47.png",
-        correctAnswer: 1,
-        answerText: "(a) Yes, spherical &ensp; (b) $\\dfrac{d}{\\sqrt{3}-1}$"
-      },
+      { id: 47, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q47.png", solutionImage: "/a/SBT-Electrostatics/a47.png", correctAnswer: 1, answerText: "(a) Yes, spherical &ensp; (b) $\\dfrac{d}{\\sqrt{3}-1}$" },
 
       // id 48 ← Book Q145
-      {
-        id: 48, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q48.png",
-        solutionImage: "/a/SBT-Electrostatics/a48.png",
-        correctAnswer: 1,
-        answerText: "See diagrams (a) and (b) in solution image"
-      },
+      { id: 48, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q48.png", solutionImage: "/a/SBT-Electrostatics/a48.png", correctAnswer: 1, answerText: "See diagrams in solution image" },
 
       // id 49 ← Book Q147
-      {
-        id: 49, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q49.png",
-        solutionImage: "/a/SBT-Electrostatics/a49.png",
-        correctAnswer: 1,
-        answerText: "$$\\frac{2Q}{3}$$"
-      },
+      { id: 49, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q49.png", solutionImage: "/a/SBT-Electrostatics/a49.png", correctAnswer: 1, answerText: "$$\\frac{2Q}{3}$$" },
 
       // id 50 ← Book Q148
-      {
-        id: 50, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q50.png",
-        solutionImage: "/a/SBT-Electrostatics/a50.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\pm 2\\pi\\varepsilon_0 ErL$ &ensp; (b) $k_0 = 2\\pi\\varepsilon_0 rE^2$ &ensp; (c) $\\dfrac{1}{E}\\sqrt{\\dfrac{\\pi m}{\\varepsilon_0 r}}$"
-      },
+      { id: 50, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q50.png", solutionImage: "/a/SBT-Electrostatics/a50.png", correctAnswer: 1, answerText: "(a) $\\pm 2\\pi\\varepsilon_0 ErL$ &ensp; (b) $k_0 = 2\\pi\\varepsilon_0 rE^2$ &ensp; (c) $\\dfrac{1}{E}\\sqrt{\\dfrac{\\pi m}{\\varepsilon_0 r}}$" },
 
       // id 51 ← Book Q150
-      {
-        id: 51, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q51.png",
-        solutionImage: "/a/SBT-Electrostatics/a51.png",
-        correctAnswer: 1,
-        answerText: "$$V_0 = \\sqrt{\\frac{Kq^2(4R-7r)}{2mrR}}$$"
-      },
+      { id: 51, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q51.png", solutionImage: "/a/SBT-Electrostatics/a51.png", correctAnswer: 1, answerText: "$$V_0 = \\sqrt{\\frac{Kq^2(4R-7r)}{2mrR}}$$" },
 
       // id 52 ← Book Q151
-      {
-        id: 52, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q52.png",
-        solutionImage: "/a/SBT-Electrostatics/a52.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\dfrac{\\sqrt{3}}{4}\\,l$ &ensp; (b) $\\dfrac{q}{4}\\sqrt{\\dfrac{1}{\\pi\\varepsilon_0 ml}}$ &ensp; (c) $\\dfrac{q}{16\\pi\\varepsilon_0 l^2}(5q+4Q)$"
-      },
+      { id: 52, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q52.png", solutionImage: "/a/SBT-Electrostatics/a52.png", correctAnswer: 1, answerText: "(a) $\\dfrac{\\sqrt{3}}{4}\\,l$ &ensp; (b) $\\dfrac{q}{4}\\sqrt{\\dfrac{1}{\\pi\\varepsilon_0 ml}}$ &ensp; (c) $\\dfrac{q}{16\\pi\\varepsilon_0 l^2}(5q+4Q)$" },
 
       // id 53 ← Book Q154
-      {
-        id: 53, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q53.png",
-        solutionImage: "/a/SBT-Electrostatics/a53.png",
-        correctAnswer: 1,
-        answerText: "(a) $V = \\sqrt{V_0^2 + \\dfrac{\\lambda Q}{\\pi\\varepsilon_0 m}\\ln I}$ &ensp; (b) $V_r = \\sqrt{V_0^2\\!\\left(1-\\dfrac{1}{I^2}\\right) + \\dfrac{\\lambda Q}{\\pi\\varepsilon_0 m}\\ln I}$"
-      },
+      { id: 53, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q53.png", solutionImage: "/a/SBT-Electrostatics/a53.png", correctAnswer: 1, answerText: "(a) $V = \\sqrt{V_0^2 + \\dfrac{\\lambda Q}{\\pi\\varepsilon_0 m}\\ln I}$ &ensp; (b) $V_r = \\sqrt{V_0^2\\!\\left(1-\\dfrac{1}{I^2}\\right) + \\dfrac{\\lambda Q}{\\pi\\varepsilon_0 m}\\ln I}$" },
 
-      // id 54 ← Book Q156
-      {
-        id: 54, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q54.png",
-        solutionImage: "/a/SBT-Electrostatics/a54.png",
-        correctAnswer: 1,
-        answerText: "(a) Not possible &ensp; (b) $E = \\left(\\dfrac{2}{\\sqrt{3}-1}\\right)\\dfrac{Mg}{\\lambda L}$ &ensp; (c) $\\theta_0 = 45°$"
-      },
+      // id 54 ← Book Q155  ← NEW
+      { id: 54, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q54.png", solutionImage: "/a/SBT-Electrostatics/a54.png", correctAnswer: 1, answerText: "(a) $E_0 = \\dfrac{Mg}{\\lambda L}$ &ensp; (b) $\\omega = \\sqrt{3(\\sqrt{2}-1)\\,\\dfrac{g}{L}}$" },
 
-      // id 55 ← Book Q157
-      {
-        id: 55, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q55.png",
-        solutionImage: "/a/SBT-Electrostatics/a55.png",
-        correctAnswer: 1,
-        answerText: "(b) $\\Delta U = \\dfrac{EqL}{2}(1-\\cos\\Delta\\theta)$ &ensp; (c) $T = \\pi\\sqrt{\\dfrac{5mL}{Eq}}$"
-      },
+      // id 55 ← Book Q156
+      { id: 55, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q55.png", solutionImage: "/a/SBT-Electrostatics/a55.png", correctAnswer: 1, answerText: "(a) Not possible &ensp; (b) $E = \\left(\\dfrac{2}{\\sqrt{3}-1}\\right)\\dfrac{Mg}{\\lambda L}$ &ensp; (c) $\\theta_0 = 45°$" },
 
-      // id 56 ← Book Q158
-      {
-        id: 56, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q56.png",
-        solutionImage: "/a/SBT-Electrostatics/a56.png",
-        correctAnswer: 1,
-        answerText: "(b) $v_0/2$ &ensp; (c) $\\dfrac{3mPv_0^2}{8e}$"
-      },
+      // id 56 ← Book Q157
+      { id: 56, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q56.png", solutionImage: "/a/SBT-Electrostatics/a56.png", correctAnswer: 1, answerText: "(b) $\\Delta U = \\dfrac{EqL}{2}(1-\\cos\\Delta\\theta)$ &ensp; (c) $T = \\pi\\sqrt{\\dfrac{5mL}{Eq}}$" },
 
-      // id 57 ← Book Q160
-      {
-        id: 57, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q57.png",
-        solutionImage: "/a/SBT-Electrostatics/a57.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\dfrac{3}{5}\\,\\dfrac{Q^2}{4\\pi\\varepsilon_0 R}$ &ensp; (b) $\\dfrac{147}{320}\\,\\dfrac{Q^2}{4\\pi\\varepsilon_0 R}$"
-      },
+      // id 57 ← Book Q158
+      { id: 57, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q57.png", solutionImage: "/a/SBT-Electrostatics/a57.png", correctAnswer: 1, answerText: "(b) $v_0/2$ &ensp; (c) $\\dfrac{3mPv_0^2}{8e}$" },
 
-      // id 58 ← Book Q162
-      {
-        id: 58, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q58.png",
-        solutionImage: "/a/SBT-Electrostatics/a58.png",
-        correctAnswer: 1,
-        answerText: "(a) $\\dfrac{3}{2}\\,\\dfrac{KP}{r_0^3}$ &ensp; (b) $\\dfrac{1}{\\sqrt{2}}$"
-      },
+      // id 58 ← Book Q160
+      { id: 58, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q58.png", solutionImage: "/a/SBT-Electrostatics/a58.png", correctAnswer: 1, answerText: "(a) $\\dfrac{3}{5}\\,\\dfrac{Q^2}{4\\pi\\varepsilon_0 R}$ &ensp; (b) $\\dfrac{147}{320}\\,\\dfrac{Q^2}{4\\pi\\varepsilon_0 R}$" },
 
-      // id 59 ← Book Q165
-      {
-        id: 59, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q59.png",
-        solutionImage: "/a/SBT-Electrostatics/a59.png",
-        correctAnswer: 1,
-        answerText: "$$\\frac{\\rho R^3 d}{3\\varepsilon_0 r^3}\\sqrt{3\\cos^2\\theta + 1}$$"
-      },
+      // id 59 ← Book Q162
+      { id: 59, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q59.png", solutionImage: "/a/SBT-Electrostatics/a59.png", correctAnswer: 1, answerText: "(a) $\\dfrac{3}{2}\\,\\dfrac{KP}{r_0^3}$ &ensp; (b) $\\dfrac{1}{\\sqrt{2}}$" },
 
-      // id 60 ← Book Q166
-      {
-        id: 60, section: "Physics", type: "mcq",
-        questionImage: "/q/SBT-Electrostatics/q60.png",
-        solutionImage: "/a/SBT-Electrostatics/a60.png",
-        correctAnswer: 1,
-        answerText: "(a) $v = \\sqrt{\\dfrac{-2QKP\\cos\\theta}{mr^2}}$ &ensp; (b) Zero &ensp; (c) Bead oscillates; stops at diametrically opposite point &ensp; (d) Identical motion"
-      },
+      // id 60 ← Book Q165
+      { id: 60, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q60.png", solutionImage: "/a/SBT-Electrostatics/a60.png", correctAnswer: 1, answerText: "$$\\frac{\\rho R^3 d}{3\\varepsilon_0 r^3}\\sqrt{3\\cos^2\\theta + 1}$$" },
+
+      // id 61 ← Book Q166
+      { id: 61, section: "Physics", type: "mcq", questionImage: "/q/SBT-Electrostatics/q61.png", solutionImage: "/a/SBT-Electrostatics/a61.png", correctAnswer: 1, answerText: "(a) $v = \\sqrt{\\dfrac{-2QKP\\cos\\theta}{mr^2}}$ &ensp; (b) Zero &ensp; (c) Bead oscillates; stops at diametrically opposite point &ensp; (d) Identical motion" },
 
     ]
   },
