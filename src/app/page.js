@@ -525,7 +525,7 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack, onSwitchToPr
 // ═══════════════════════════════════════════════════════════════
 function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
   const qs = test.questions;
-  const sections = ['Physics', 'Chemistry', 'Mathematics'];
+  const sections = test.subjects || ['Physics', 'Chemistry', 'Mathematics'];
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState(() => new Array(qs.length).fill(null));
@@ -934,7 +934,7 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
 function ResultsScreen({ test, result, dark, setDark, onHome, onRetry, reviewMode }) {
   const qs = test.questions;
   const [filterSection, setFilterSection] = useState('All');
-  const sections = ['All', 'Physics', 'Chemistry', 'Mathematics'];
+  const sections = ['All', ...(test.subjects || ['Physics', 'Chemistry', 'Mathematics'])];
   const pct = Math.round((result.score / test.maxMarks) * 100);
 
   const filteredQs = filterSection === 'All' ? qs : qs.filter(q => q.section === filterSection);
@@ -1016,7 +1016,7 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry, reviewMod
 
         {/* Section-wise breakdown */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
-          {['Physics', 'Chemistry', 'Mathematics'].map(sec => {
+          {(test.subjects || ['Physics', 'Chemistry', 'Mathematics']).map(sec => {
             const secQs = qs.filter(q => q.section === sec);
             const secDetails = result.details.filter((_, i) => qs[i].section === sec);
             const secCorrect = secDetails.filter(d => d.result === 'correct').length;

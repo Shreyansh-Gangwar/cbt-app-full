@@ -774,7 +774,7 @@ export const tests = [
     subject: "Mathematics",
     subjects: ["Mathematics"],
     chapter: "Determinants",
-    duration: 1800,           // 30 minutes (20 MCQ chapter-wise)
+    duration: 3600,           // 30 minutes (20 MCQ chapter-wise)
     date: "11/04/2026",
     maxMarks: 80,
     totalQuestions: 20,
