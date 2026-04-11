@@ -7,10 +7,19 @@ const S = { NOT_VISITED: 0, NOT_ANSWERED: 1, ANSWERED: 2, MARKED: 3, MARKED_ANSW
 
 // ── Storage helpers ───────────────────────────────────────────
 function saveResult(testId, result) {
-  try { localStorage.setItem(`jee_result_${testId}`, JSON.stringify(result)); } catch { }
+  try {
+    const existing = loadAttempts(testId);
+    existing.unshift({ ...result, attemptId: Date.now() }); // newest first
+    localStorage.setItem(`jee_attempts_${testId}`, JSON.stringify(existing));
+    // keep legacy key for TestCard "last score" display
+    localStorage.setItem(`jee_result_${testId}`, JSON.stringify(result));
+  } catch { }
 }
 function loadResult(testId) {
   try { const r = localStorage.getItem(`jee_result_${testId}`); return r ? JSON.parse(r) : null; } catch { return null; }
+}
+function loadAttempts(testId) {
+  try { const r = localStorage.getItem(`jee_attempts_${testId}`); return r ? JSON.parse(r) : []; } catch { return []; }
 }
 
 // ── Global CSS ────────────────────────────────────────────────
@@ -127,16 +136,108 @@ function QuestionImage({ src, alt }) {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════
+//  MODAL: PAST ATTEMPTS
+// ═══════════════════════════════════════════════════════════════
+function AttemptsModal({ test, onClose, onReview }) {
+  const attempts = loadAttempts(test.id);
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      zIndex: 200, padding: 16
+    }} onClick={onClose}>
+      <div className="slide-up" style={{
+        background: 'var(--bg2)', border: '1px solid var(--border)',
+        borderRadius: 16, padding: 28, width: '100%', maxWidth: 520,
+        maxHeight: '80vh', display: 'flex', flexDirection: 'column'
+      }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>Past Attempts</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text3)', marginTop: 2 }}>{test.name}</div>
+          </div>
+          <button onClick={onClose} style={{
+            background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 8,
+            padding: '6px 12px', color: 'var(--text2)', fontSize: '0.85rem'
+          }}>✕ Close</button>
+        </div>
+
+        {attempts.length === 0 ? (
+          <div style={{ textAlign: 'center', color: 'var(--text3)', padding: '32px 0', fontSize: '0.9rem' }}>
+            No attempts yet. Take the test to see your history here.
+          </div>
+        ) : (
+          <div style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {attempts.map((attempt, i) => {
+              const pct = Math.round((attempt.score / test.maxMarks) * 100);
+              const scoreColor = pct >= 60 ? 'var(--green)' : pct >= 35 ? 'var(--orange)' : 'var(--red)';
+              const date = new Date(attempt.date || attempt.attemptId);
+              const dateStr = date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+              const timeStr = date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+              return (
+                <div key={attempt.attemptId || i} style={{
+                  background: 'var(--bg3)', border: '1px solid var(--border)',
+                  borderRadius: 12, padding: '14px 16px',
+                  display: 'flex', alignItems: 'center', gap: 14
+                }}>
+                  {/* Attempt number badge */}
+                  <div style={{
+                    width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+                    background: 'var(--bg4)', border: '1px solid var(--border2)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.75rem', fontWeight: 700, color: 'var(--text3)'
+                  }}>#{attempts.length - i}</div>
+
+                  {/* Date + stats */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text2)' }}>
+                      {dateStr} · {timeStr}
+                    </div>
+                    <div style={{ display: 'flex', gap: 10, marginTop: 5, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--green)' }}>✓ {attempt.correct} correct</span>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--red)' }}>✗ {attempt.wrong} wrong</span>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text3)' }}>— {attempt.skipped} skipped</span>
+                    </div>
+                  </div>
+
+                  {/* Score */}
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontSize: '1.3rem', fontWeight: 800, color: scoreColor, lineHeight: 1 }}>
+                      {attempt.score}
+                    </div>
+                    <div style={{ fontSize: '0.65rem', color: 'var(--text3)', marginTop: 2 }}>
+                      /{test.maxMarks} · {pct}%
+                    </div>
+                  </div>
+
+                  {/* Review button */}
+                  <button onClick={() => onReview(attempt)} style={{
+                    background: 'var(--accent)', borderRadius: 8, padding: '7px 14px',
+                    color: '#fff', fontWeight: 700, fontSize: '0.78rem', flexShrink: 0
+                  }}>Review</button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Option button labels ──────────────────────────────────────
 const OPTION_LABELS = ['Option A', 'Option B', 'Option C', 'Option D'];
 
 // ═══════════════════════════════════════════════════════════════
 //  SCREEN: HOME / TEST SELECTION
 // ═══════════════════════════════════════════════════════════════
-function HomeScreen({ dark, setDark, onSelect }) {
+function HomeScreen({ dark, setDark, onSelect, onReviewAttempt }) {
   const grouped = getTestsBySubject();
   const subjectColors = { Physics: '--phys', Chemistry: '--chem', Mathematics: '--math' };
   const subjectIcons = { Physics: '⚡', Chemistry: '⚗️', Mathematics: '∑' };
+  const [historyTest, setHistoryTest] = useState(null);
 
   return (
     <div style={{ minHeight: '100vh', padding: '0 0 60px' }}>
@@ -217,7 +318,8 @@ function HomeScreen({ dark, setDark, onSelect }) {
                 const result = loadResult(test.id);
                 return (
                   <TestCard key={test.id} test={test} result={result}
-                    color={subjectColors[subject] || '--accent'} onSelect={onSelect} />
+                    color={subjectColors[subject] || '--accent'} onSelect={onSelect}
+                    onHistory={t => setHistoryTest(t)} />
                 );
               })}
             </div>
@@ -232,12 +334,20 @@ function HomeScreen({ dark, setDark, onSelect }) {
           <div style={{ fontWeight: 600, marginBottom: 4 }}>made with love</div>
         </div>
       </div>
+      {historyTest && (
+        <AttemptsModal
+          test={historyTest}
+          onClose={() => setHistoryTest(null)}
+          onReview={attempt => { setHistoryTest(null); onReviewAttempt(historyTest, attempt); }}
+        />
+      )}
     </div>
   );
 }
 
-function TestCard({ test, result, color, onSelect }) {
+function TestCard({ test, result, color, onSelect, onHistory }) {
   const sections = ['Physics', 'Chemistry', 'Mathematics'];
+  const attemptCount = loadAttempts(test.id).length;
   const [mode, setMode] = useState('exam');
   return (
     <div className="fade-in" style={{
@@ -267,16 +377,33 @@ function TestCard({ test, result, color, onSelect }) {
         <div style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>
           {test.totalQuestions}Q · {Math.round(test.duration / 60)} min · {test.maxMarks} marks
         </div>
-        {result ? (
-          <div style={{
-            fontSize: '0.75rem', fontWeight: 700,
-            color: result.score >= 0 ? 'var(--green)' : 'var(--red)',
-            background: result.score >= 0 ? '#22c55e22' : '#ef444422',
-            padding: '3px 8px', borderRadius: 6
-          }}>{result.score}/{test.maxMarks}</div>
-        ) : (
-          <div style={{ fontSize: '0.75rem', color: 'var(--text3)', background: 'var(--bg3)', padding: '3px 8px', borderRadius: 6 }}>Not attempted</div>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {result ? (
+            <div style={{
+              fontSize: '0.75rem', fontWeight: 700,
+              color: result.score >= 0 ? 'var(--green)' : 'var(--red)',
+              background: result.score >= 0 ? '#22c55e22' : '#ef444422',
+              padding: '3px 8px', borderRadius: 6
+            }}>
+              {result.score}/{test.maxMarks}
+            </div>
+          ) : (
+            <div style={{
+              fontSize: '0.75rem', color: 'var(--text3)',
+              background: 'var(--bg3)', padding: '3px 8px', borderRadius: 6
+            }}>Not attempted</div>
+          )}
+          {attemptCount > 0 && (
+            <button
+              onClick={e => { e.stopPropagation(); onHistory(test); }}
+              style={{
+                fontSize: '0.72rem', fontWeight: 600, color: 'var(--accent2)',
+                background: '#3b82f622', border: '1px solid #3b82f644',
+                borderRadius: 6, padding: '3px 8px', cursor: 'pointer'
+              }}
+            >🕑 {attemptCount} attempt{attemptCount !== 1 ? 's' : ''}</button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -804,7 +931,7 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
 // ═══════════════════════════════════════════════════════════════
 //  SCREEN: RESULTS
 // ═══════════════════════════════════════════════════════════════
-function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
+function ResultsScreen({ test, result, dark, setDark, onHome, onRetry, reviewMode }) {
   const qs = test.questions;
   const [filterSection, setFilterSection] = useState('All');
   const sections = ['All', 'Physics', 'Chemistry', 'Mathematics'];
@@ -862,15 +989,28 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry }) {
               </div>
             ))}
           </div>
-          <div style={{ display: 'flex', gap: 12, marginTop: 24, justifyContent: 'center' }}>
-            <button onClick={onRetry} style={{
-              padding: '10px 24px', borderRadius: 10, fontWeight: 600,
-              background: 'var(--accent)', color: '#fff', fontSize: '0.9rem'
-            }}>Retry Test</button>
+          {reviewMode && (
+            <div style={{
+              background: '#3b82f611', border: '1px solid #3b82f644',
+              borderRadius: 10, padding: '10px 18px', marginTop: 16,
+              fontSize: '0.82rem', color: 'var(--accent2)', textAlign: 'center'
+            }}>
+              📋 Reviewing a past attempt — your answers vs correct answers shown below
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 12, marginTop: 16, justifyContent: 'center' }}>
+            {!reviewMode && (
+              <button onClick={onRetry} style={{
+                padding: '10px 24px', borderRadius: 10, fontWeight: 600,
+                background: 'var(--accent)', color: '#fff', fontSize: '0.9rem'
+              }}>Retry Test</button>
+            )}
             <button onClick={onHome} style={{
               padding: '10px 24px', borderRadius: 10, fontWeight: 600,
-              background: 'var(--bg4)', border: '1px solid var(--border2)', color: 'var(--text2)', fontSize: '0.9rem'
-            }}>Back to Home</button>
+              background: reviewMode ? 'var(--accent)' : 'var(--bg4)',
+              border: reviewMode ? 'none' : '1px solid var(--border2)',
+              color: reviewMode ? '#fff' : 'var(--text2)', fontSize: '0.9rem'
+            }}>{reviewMode ? '← Back to Home' : 'Back to Home'}</button>
           </div>
         </div>
 
@@ -1423,10 +1563,11 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
 // ═══════════════════════════════════════════════════════════════
 export default function App() {
   const [dark, setDark] = useState(true);
-  const [screen, setScreen] = useState('home');
+  const [screen, setScreen] = useState('home'); // home | instructions | test | results
   const [selectedTest, setSelectedTest] = useState(null);
   const [testDuration, setTestDuration] = useState(null);
   const [testResult, setTestResult] = useState(null);
+  const [reviewMode, setReviewMode] = useState(false); // true when viewing a past attempt
 
   useEffect(() => {
     const root = document.documentElement;
@@ -1448,7 +1589,16 @@ export default function App() {
     <>
       <style>{globalCSS}</style>
       {screen === 'home' && (
-        <HomeScreen dark={dark} setDark={setDark} onSelect={handleSelectTest} />
+        <HomeScreen
+          dark={dark} setDark={setDark}
+          onSelect={test => { setSelectedTest(test); setScreen('instructions'); }}
+          onReviewAttempt={(test, attempt) => {
+            setSelectedTest(test);
+            setTestResult(attempt);
+            setReviewMode(true);
+            setScreen('results');
+          }}
+        />
       )}
       {screen === 'instructions' && selectedTest && (
         <InstructionsScreen
@@ -1470,8 +1620,9 @@ export default function App() {
         <ResultsScreen
           test={selectedTest} result={testResult}
           dark={dark} setDark={setDark}
-          onHome={() => { setScreen('home'); setTestResult(null); setSelectedTest(null); }}
-          onRetry={() => { setScreen('instructions'); setTestResult(null); }}
+          reviewMode={reviewMode}
+          onHome={() => { setScreen('home'); setTestResult(null); setSelectedTest(null); setReviewMode(false); }}
+          onRetry={() => { setScreen('instructions'); setTestResult(null); setReviewMode(false); }}
         />
       )}
       {screen === 'practice' && selectedTest && (
