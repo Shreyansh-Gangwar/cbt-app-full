@@ -629,6 +629,7 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
     saveResult(test.id, result);
     onSubmit(result);
   }, [answers, qs, test.id, onSubmit]);
+
   submitRef.current = handleFinalSubmit;
 
   const sectionQs = (sec) => qs.filter(q => q.section === sec);
