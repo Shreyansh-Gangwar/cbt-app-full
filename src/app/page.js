@@ -182,7 +182,6 @@ function AttemptsModal({ test, onClose, onReview }) {
                   borderRadius: 12, padding: '14px 16px',
                   display: 'flex', alignItems: 'center', gap: 14
                 }}>
-                  {/* Attempt number badge */}
                   <div style={{
                     width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
                     background: 'var(--bg4)', border: '1px solid var(--border2)',
@@ -190,7 +189,6 @@ function AttemptsModal({ test, onClose, onReview }) {
                     fontSize: '0.75rem', fontWeight: 700, color: 'var(--text3)'
                   }}>#{attempts.length - i}</div>
 
-                  {/* Date + stats */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text2)' }}>
                       {dateStr} · {timeStr}
@@ -202,7 +200,6 @@ function AttemptsModal({ test, onClose, onReview }) {
                     </div>
                   </div>
 
-                  {/* Score */}
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
                     <div style={{ fontSize: '1.3rem', fontWeight: 800, color: scoreColor, lineHeight: 1 }}>
                       {attempt.score}
@@ -212,7 +209,6 @@ function AttemptsModal({ test, onClose, onReview }) {
                     </div>
                   </div>
 
-                  {/* Review button */}
                   <button onClick={() => onReview(attempt)} style={{
                     background: 'var(--accent)', borderRadius: 8, padding: '7px 14px',
                     color: '#fff', fontWeight: 700, fontSize: '0.78rem', flexShrink: 0
@@ -348,7 +344,6 @@ function HomeScreen({ dark, setDark, onSelect, onReviewAttempt }) {
 function TestCard({ test, result, color, onSelect, onHistory }) {
   const sections = ['Physics', 'Chemistry', 'Mathematics'];
   const attemptCount = loadAttempts(test.id).length;
-  const [mode, setMode] = useState('exam');
   return (
     <div className="fade-in" style={{
       background: 'var(--bg2)', border: '1px solid var(--border)',
@@ -431,8 +426,6 @@ function InstructionsScreen({ test, dark, setDark, onStart, onBack, onSwitchToPr
         <div className="slide-up">
           <h1 style={{ fontWeight: 800, fontSize: '1.8rem', letterSpacing: '-0.03em', marginBottom: 6 }}>General Instructions</h1>
           <div style={{ color: 'var(--text3)', marginBottom: 24 }}>Please read carefully before starting the test</div>
-
-
 
           <div style={{ background: 'var(--bg2)', border: '1px solid var(--accent)44', borderRadius: 12, padding: 20, marginBottom: 24 }}>
             <div style={{ fontWeight: 600, marginBottom: 12, color: 'var(--accent2)' }}>⏱️ Set Test Duration</div>
@@ -536,10 +529,10 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
   const [activeSection, setActiveSection] = useState('Physics');
   const timerRef = useRef(null);
   const submitRef = useRef(null);
-  submitRef.current = handleFinalSubmit;
 
   const currentQ = qs[currentIdx];
 
+  // Timer — uses submitRef so it always calls the latest handleFinalSubmit
   useEffect(() => {
     timerRef.current = setInterval(() => {
       setTimeLeft(t => {
@@ -630,6 +623,7 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
     onSubmit(result);
   }, [answers, qs, test.id, onSubmit]);
 
+  // Keep ref always pointing to latest handleFinalSubmit (for timer auto-submit)
   submitRef.current = handleFinalSubmit;
 
   const sectionQs = (sec) => qs.filter(q => q.section === sec);
@@ -641,7 +635,6 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
   const notVisited = states.filter(s => s === S.NOT_VISITED).length;
   const isLastFive = timeLeft <= 300;
 
-  // Determine the image path for a question
   const questionImageSrc = (q) => q.questionImage || `/q/q${q.id}.jpg`;
 
   return (
@@ -723,7 +716,7 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
               </div>
             </div>
 
-            {/* ── Question image ── */}
+            {/* Question image */}
             <div style={{
               background: 'var(--bg2)', border: '1px solid var(--border)',
               borderRadius: 12, padding: '16px 20px', marginBottom: 20
@@ -734,48 +727,25 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
               <QuestionImage src={questionImageSrc(currentQ)} alt={`Question ${currentQ.id}`} />
             </div>
 
-            {/* ── MCQ: A / B / C / D buttons only (no text) ── */}
+            {/* MCQ option buttons */}
             {currentQ.type === 'mcq' && (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 12,
-                  marginBottom: 20,
-                  padding: '0 16px', // side padding so it doesn't stretch ugly
-                  width: '100%',
-                }}
-              >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20, padding: '0 16px', width: '100%' }}>
                 {OPTION_LABELS.map((label, oi) => {
                   const optNum = oi + 1;
                   const isSelected = answers[currentIdx] === optNum;
-
                   return (
                     <button
                       key={oi}
                       onClick={() => handleAnswer(optNum)}
                       style={{
-                        width: '100%', // full width
-                        minHeight: 56,
-                        borderRadius: 12,
-
+                        width: '100%', minHeight: 56, borderRadius: 12,
                         background: isSelected ? 'var(--accent)' : 'var(--bg2)',
-                        border: `2px solid ${isSelected ? 'var(--accent)' : 'var(--border2)'
-                          }`,
+                        border: `2px solid ${isSelected ? 'var(--accent)' : 'var(--border2)'}`,
                         color: isSelected ? '#fff' : 'var(--text2)',
-
-                        fontSize: '1rem',
-                        fontWeight: 700,
-
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'flex-start',
+                        fontSize: '1rem', fontWeight: 700,
+                        display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
                         padding: '14px 16px',
-
-                        boxShadow: isSelected
-                          ? '0 4px 16px rgba(59,130,246,0.35)'
-                          : 'none',
-
+                        boxShadow: isSelected ? '0 4px 16px rgba(59,130,246,0.35)' : 'none',
                         transform: isSelected ? 'scale(1.02)' : 'scale(1)',
                         transition: 'all 0.15s ease',
                       }}
@@ -787,7 +757,7 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
               </div>
             )}
 
-            {/* ── Integer type input ── */}
+            {/* Integer type input */}
             {currentQ.type === 'integer' && (
               <div style={{
                 background: 'var(--bg2)', border: '1px solid var(--border)',
@@ -842,7 +812,6 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
           background: 'var(--bg2)', overflowY: 'auto', flexShrink: 0
         }}>
           <div style={{ padding: '16px 14px' }}>
-            {/* Stats */}
             <div style={{
               background: 'var(--bg3)', borderRadius: 10, padding: 12, marginBottom: 16,
               display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8
@@ -860,7 +829,6 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
               ))}
             </div>
 
-            {/* Section question grids */}
             {sections.map(sec => {
               const start = sectionStart(sec);
               const secQsList = sectionQs(sec);
@@ -943,7 +911,6 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry, reviewMod
 
   const filteredQs = filterSection === 'All' ? qs : qs.filter(q => q.section === filterSection);
 
-  // Determine the image path for a question
   const questionImageSrc = (q) => q.questionImage || `/q/q${q.id}.jpg`;
 
   return (
@@ -1068,7 +1035,6 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry, reviewMod
                 borderRadius: 12, marginBottom: 12, overflow: 'hidden'
               }}>
                 <div style={{ padding: '14px 18px' }}>
-                  {/* Row: status icon + Q number + score badge + meta */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
                     <div style={{
                       width: 28, height: 28, borderRadius: '50%',
@@ -1087,132 +1053,59 @@ function ResultsScreen({ test, result, dark, setDark, onHome, onRetry, reviewMod
                     </div>
                   </div>
 
-                  {/* Question image (small, zoomable) */}
                   <div style={{ marginBottom: 14 }}>
                     <QuestionImage src={questionImageSrc(q)} alt={`Q${q.id}`} />
                   </div>
 
-                  {/* Answer summary */}
                   {q.type === 'mcq' ? (
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 12,
-                        width: '100%',
-                        padding: '0 16px',
-                      }}
-                    >
-                      {/* Correct answer */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 10,
-                          background: '#22c55e22',
-                          border: '1px solid var(--green)',
-                          borderRadius: 10,
-                          padding: '12px 16px',
-                          width: '100%',
-                          flexWrap: 'wrap',
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontSize: '0.82rem',
-                            color: 'var(--text3)',
-                            whiteSpace: 'nowrap',
-                            paddingRight: 6,
-                            lineHeight: 1.4,
-                          }}
-                        >
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', padding: '0 16px' }}>
+                      <div style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        background: '#22c55e22', border: '1px solid var(--green)',
+                        borderRadius: 10, padding: '12px 16px', width: '100%', flexWrap: 'wrap',
+                      }}>
+                        <span style={{ fontSize: '0.82rem', color: 'var(--text3)', whiteSpace: 'nowrap', paddingRight: 6, lineHeight: 1.4 }}>
                           Correct:
                         </span>
-
-                        <div
-                          style={{
-                            minWidth: 32,
-                            height: 32,
-                            borderRadius: 8,
-                            background: 'var(--green)',
-                            color: '#fff',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 800,
-                            fontSize: '0.95rem',
-                            flexShrink: 0,
-                          }}
-                        >
+                        <div style={{
+                          minWidth: 32, height: 32, borderRadius: 8, background: 'var(--green)', color: '#fff',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontWeight: 800, fontSize: '0.95rem', flexShrink: 0,
+                        }}>
                           {OPTION_LABELS[q.correctAnswer - 1]}
                         </div>
                       </div>
 
-                      {/* User answer */}
                       {det.ans !== null ? (
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 10,
-                            background: isCorrect ? '#22c55e22' : '#ef444422',
-                            border: `1px solid ${isCorrect ? 'var(--green)' : 'var(--red)'
-                              }`,
-                            borderRadius: 10,
-                            padding: '12px 16px',
-                            width: '100%',
-                            flexWrap: 'wrap',
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: '0.82rem',
-                              color: 'var(--text3)',
-                              whiteSpace: 'nowrap',
-                              paddingRight: 6,
-                              lineHeight: 1.4,
-                            }}
-                          >
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: 10,
+                          background: isCorrect ? '#22c55e22' : '#ef444422',
+                          border: `1px solid ${isCorrect ? 'var(--green)' : 'var(--red)'}`,
+                          borderRadius: 10, padding: '12px 16px', width: '100%', flexWrap: 'wrap',
+                        }}>
+                          <span style={{ fontSize: '0.82rem', color: 'var(--text3)', whiteSpace: 'nowrap', paddingRight: 6, lineHeight: 1.4 }}>
                             Your answer:
                           </span>
-
-                          <div
-                            style={{
-                              minWidth: 32,
-                              height: 32,
-                              borderRadius: 8,
-                              background: isCorrect ? 'var(--green)' : 'var(--red)',
-                              color: '#fff',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontWeight: 800,
-                              fontSize: '0.95rem',
-                              flexShrink: 0,
-                            }}
-                          >
+                          <div style={{
+                            minWidth: 32, height: 32, borderRadius: 8,
+                            background: isCorrect ? 'var(--green)' : 'var(--red)', color: '#fff',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontWeight: 800, fontSize: '0.95rem', flexShrink: 0,
+                          }}>
                             {OPTION_LABELS[det.ans - 1]}
                           </div>
                         </div>
                       ) : (
-                        <div
-                          style={{
-                            background: '#64748b22',
-                            border: '1px solid var(--border2)',
-                            borderRadius: 10,
-                            padding: '12px 16px',
-                            fontSize: '0.85rem',
-                            color: 'var(--text3)',
-                            width: '100%',
-                            lineHeight: 1.4,
-                          }}
-                        >
+                        <div style={{
+                          background: '#64748b22', border: '1px solid var(--border2)',
+                          borderRadius: 10, padding: '12px 16px', fontSize: '0.85rem',
+                          color: 'var(--text3)', width: '100%', lineHeight: 1.4,
+                        }}>
                           Not attempted
                         </div>
                       )}
                     </div>
                   ) : (
-                    /* Integer type answer display */
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', fontSize: '0.85rem' }}>
                       <div style={{
                         background: '#22c55e22', border: '1px solid var(--green)',
@@ -1331,47 +1224,6 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
               <QuestionImage src={questionImageSrc(currentQ)} alt={`Question ${currentQ.id}`} />
             </div>
 
-            {/* MCQ option buttons */}
-            {/* 
-            {currentQ.type === 'mcq' && !showSolution && (
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
-                {OPTION_LABELS.map((label, oi) => {
-                  const optNum = oi + 1;
-                  const isSelected = selectedOpt === optNum;
-                  return (
-                    <button key={oi} onClick={() => setSelectedOpt(optNum)} style={{
-                      width: 56, height: 56, borderRadius: 12,
-                      background: isSelected ? 'var(--accent)' : 'var(--bg2)',
-                      border: `2px solid ${isSelected ? 'var(--accent)' : 'var(--border2)'}`,
-                      color: isSelected ? '#fff' : 'var(--text2)',
-                      fontSize: '1.1rem', fontWeight: 800,
-                      boxShadow: isSelected ? '0 4px 16px rgba(59,130,246,0.35)' : 'none',
-                      transform: isSelected ? 'scale(1.08)' : 'scale(1)',
-                    }}>{label}</button>
-                  );
-                })}
-              </div>
-            )}
-              */}
-
-            {/* Integer input */}
-            {/*
-            {currentQ.type === 'integer' && !showSolution && (
-              <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 20 }}>
-                <div style={{ color: 'var(--text2)', fontSize: '0.88rem', marginBottom: 12 }}>Your answer (integer):</div>
-                <input
-                  type="number" value={intInput} onChange={e => setIntInput(e.target.value)}
-                  placeholder="Type answer..."
-                  style={{
-                    background: 'var(--bg3)', border: '1px solid var(--border2)', borderRadius: 8,
-                    padding: '12px 20px', color: 'var(--text)', fontSize: '1.4rem', width: 180, textAlign: 'center'
-                  }}
-                />
-              </div>
-            )}
-              */}
-
-
             {/* Show Answer button */}
             {!showSolution && (
               <button onClick={handleShowAnswer} style={{
@@ -1380,118 +1232,63 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
                 color: '#fff', marginBottom: 20
               }}>Show Answer & Solution →</button>
             )}
+
             {/* Solution panel */}
             {showSolution && (
-              <div
-                className="fade-in"
-                style={{
-                  background: 'var(--bg2)',
-                  border: '1px solid var(--green)',
-                  borderRadius: 12,
-                  overflow: 'hidden',
-                  marginBottom: 20,
-                }}
-              >
-                {/* Header */}
-                <div
-                  style={{
-                    padding: '14px 18px',
-                    borderBottom: '1px solid var(--border)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    flexWrap: 'wrap',
-                    gap: 10,
-                  }}
-                >
-                  <span
-                    style={{
-                      fontWeight: 700,
-                      fontSize: '0.9rem',
-                      color: 'var(--green)',
-                    }}
-                  >
+              <div className="fade-in" style={{
+                background: 'var(--bg2)', border: '1px solid var(--green)',
+                borderRadius: 12, overflow: 'hidden', marginBottom: 20,
+              }}>
+                <div style={{
+                  padding: '14px 18px', borderBottom: '1px solid var(--border)',
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  flexWrap: 'wrap', gap: 10,
+                }}>
+                  <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--green)' }}>
                     ✓ Solution
                   </span>
-
-                  {/* Answer display */}
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
                     {(() => {
                       const ans = currentQ.correctAnswer;
-
-                      // ── NEW: answerText with LaTeX (practice mode) ──
                       if (currentQ.answerText) {
                         return (
                           <div style={{
-                            background: '#22c55e22',
-                            border: '1px solid var(--green)',
-                            borderRadius: 8,
-                            padding: '6px 14px',
-                            color: 'var(--green)',
-                            fontWeight: 600,
-                            maxWidth: 480,
+                            background: '#22c55e22', border: '1px solid var(--green)',
+                            borderRadius: 8, padding: '6px 14px', color: 'var(--green)',
+                            fontWeight: 600, maxWidth: 480,
                           }}>
                             <LatexText text={currentQ.answerText} />
                           </div>
                         );
                       }
-
-                      // ── existing: matrix ──
                       if (ans === "matrix") {
                         return (
                           <div style={{
-                            background: '#f59e0b22',
-                            border: '1px solid #f59e0b',
-                            borderRadius: 8,
-                            padding: '6px 12px',
-                            color: '#f59e0b',
-                            fontWeight: 600,
-                            fontSize: '0.85rem',
-                          }}>
-                            Matrix Match
-                          </div>
+                            background: '#f59e0b22', border: '1px solid #f59e0b',
+                            borderRadius: 8, padding: '6px 12px', color: '#f59e0b',
+                            fontWeight: 600, fontSize: '0.85rem',
+                          }}>Matrix Match</div>
                         );
                       }
-
-                      // ── existing: multi correct ──
                       if (typeof ans === "string") {
                         return ans.split("").map((opt, i) => (
                           <div key={i} style={{
-                            background: '#22c55e22',
-                            border: '1px solid var(--green)',
-                            borderRadius: 6,
-                            padding: '4px 10px',
-                            color: 'var(--green)',
-                            fontWeight: 700,
-                          }}>
-                            {opt}
-                          </div>
+                            background: '#22c55e22', border: '1px solid var(--green)',
+                            borderRadius: 6, padding: '4px 10px', color: 'var(--green)', fontWeight: 700,
+                          }}>{opt}</div>
                         ));
                       }
-
-                      // ── existing: single / integer ──
                       return (
                         <div style={{
-                          background: '#22c55e22',
-                          border: '1px solid var(--green)',
-                          borderRadius: 8,
-                          padding: '6px 14px',
-                          color: 'var(--green)',
-                          fontWeight: 700,
-                        }}>
-                          {ans}
-                        </div>
+                          background: '#22c55e22', border: '1px solid var(--green)',
+                          borderRadius: 8, padding: '6px 14px', color: 'var(--green)', fontWeight: 700,
+                        }}>{ans}</div>
                       );
                     })()}
                   </div>
                 </div>
-
-                {/* Solution Image */}
                 <div style={{ padding: '16px 18px' }}>
-                  <QuestionImage
-                    src={solutionImageSrc(currentQ)}
-                    alt={`Solution ${currentQ.id}`}
-                  />
+                  <QuestionImage src={solutionImageSrc(currentQ)} alt={`Solution ${currentQ.id}`} />
                 </div>
               </div>
             )}
@@ -1567,11 +1364,11 @@ function PracticeScreen({ test, dark, setDark, onBack }) {
 // ═══════════════════════════════════════════════════════════════
 export default function App() {
   const [dark, setDark] = useState(true);
-  const [screen, setScreen] = useState('home'); // home | instructions | test | results
+  const [screen, setScreen] = useState('home');
   const [selectedTest, setSelectedTest] = useState(null);
   const [testDuration, setTestDuration] = useState(null);
   const [testResult, setTestResult] = useState(null);
-  const [reviewMode, setReviewMode] = useState(false); // true when viewing a past attempt
+  const [reviewMode, setReviewMode] = useState(false);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -1579,7 +1376,6 @@ export default function App() {
     else root.classList.add('light');
   }, [dark]);
 
-  // Decide which mode to launch
   const handleSelectTest = (test) => {
     setSelectedTest(test);
     if (test.mode === 'practice') {
