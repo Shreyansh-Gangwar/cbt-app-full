@@ -535,13 +535,15 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [activeSection, setActiveSection] = useState('Physics');
   const timerRef = useRef(null);
+  const submitRef = useRef(null);
+  submitRef.current = handleFinalSubmit;
 
   const currentQ = qs[currentIdx];
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
       setTimeLeft(t => {
-        if (t <= 1) { clearInterval(timerRef.current); handleFinalSubmit(); return 0; }
+        if (t <= 1) { clearInterval(timerRef.current); submitRef.current(); return 0; }
         return t - 1;
       });
     }, 1000);
@@ -627,6 +629,7 @@ function TestScreen({ test, duration: initDuration, dark, setDark, onSubmit }) {
     saveResult(test.id, result);
     onSubmit(result);
   }, [answers, qs, test.id, onSubmit]);
+  submitRef.current = handleFinalSubmit;
 
   const sectionQs = (sec) => qs.filter(q => q.section === sec);
   const sectionStart = (sec) => qs.findIndex(q => q.section === sec);
@@ -1591,7 +1594,7 @@ export default function App() {
       {screen === 'home' && (
         <HomeScreen
           dark={dark} setDark={setDark}
-          onSelect={test => { setSelectedTest(test); setScreen('instructions'); }}
+          onSelect={handleSelectTest}
           onReviewAttempt={(test, attempt) => {
             setSelectedTest(test);
             setTestResult(attempt);
